@@ -1,6 +1,10 @@
-#include <iostream>
+#include <cstdio>
+#include <functional>
+#include <map>
+#include <string>
 #include <vector>
-#include<bits/stdc++.h>
+#include <iostream>
+
 
 using namespace std;
 
@@ -37,36 +41,41 @@ private:
 
 };
 
+using MapType = std::map<string, std::function<void()>>;
+
 class CommandLineParser{
 public:
-    void ParseArgs(vector<string> args);
+    MapType commandMap;
+    vector<string> args;
+    void ParseArgs();
+
+    CommandLineParser(const vector<string> & args) : args(args){
+        commandMap = {
+        { "expense", CommandLineParser::ParseExpenseParams},
+        { "set_primary", CommandLineParser::ParseSetPrimaryParams},
+        { "add_budget", CommandLineParser::ParseAddBudgetParams},
+        { "add_category", CommandLineParser::ParseAddCategoryParams}, 
+        { "add_income", CommandLineParser::ParseAddIncomeParams}, 
+        { "copy_budget", CommandLineParser::ParseCopyBudgetParams}, 
+        { "list", CommandLineParser::ParseListParams}, 
+        { "info_budget", CommandLineParser::ParseInfoBudgetParams}, 
+        { "info_category", CommandLineParser::ParseInfoCategoryParams}, 
+        { "--help", CommandLineParser::ParseHelp}
+        };
+    }
 private:
-    Controller controller;
-    const string ADD = "add";
-    const string BUDGET = "budget";
-    const string CATEGORY = "category";
-    const string INCOME = "income";
-    const string LIST = "list";
-    const string SET = "set";
-    const string COPY = "copy";
-    const string INFO = "info";
-    const string EXPENSE = "expense";
-    const string HELP = "--help";
-    void ReadFirstArg(vector<string> args);
-    void SignalUnknownCommand(const string & command);
-    void SignalIncorrectNumberOfArgs();
-    void ManageAdd(vector<string> restArgs);
-    void ManageCopy(vector<string> restArgs);
-    void ManageList(vector<string> restArgs);
-    void ManageInfo(vector<string> restArgs);
-    void ParseSetParams(vector<string> restArgs);
-    void ParseExpenseParams(vector<string> restArgs);
-    void ParseBudgetParams(vector<string> restArgs);
-    void ParseCategoryParams(vector<string> restArgs);
-    void ParseIncomeParams(vector<string> restArgs);
-    void ParseCopyParams(vector<string> restArgs);
-    void ParseBudgetName(vector<string> restArgs);
-    void ParseCategoryName(vector<string> restArgs);
+    static void SignalUnknownCommand(const string & command);
+    static void SignalIncorrectNumberOfArgs();
+    static void ParseExpenseParams();
+    static void ParseSetPrimaryParams();
+    static void ParseAddBudgetParams();
+    static void ParseAddCategoryParams();
+    static void ParseAddIncomeParams();
+    static void ParseCopyBudgetParams();
+    static void ParseListParams();
+    static void ParseInfoBudgetParams();
+    static void ParseInfoCategoryParams();
+    static void ParseHelp();
 };
 void CommandLineParser::SignalUnknownCommand(const string & arg){
     cout << "Unknown command: " << arg << endl;
@@ -74,85 +83,56 @@ void CommandLineParser::SignalUnknownCommand(const string & arg){
 void CommandLineParser::SignalIncorrectNumberOfArgs(){
     cout << "Incorrect number of args passed on command line. " << endl;
 }
-void CommandLineParser::ParseArgs(vector<string> args){
-    ReadFirstArg(args);
-}
-void CommandLineParser::ReadFirstArg(vector<string> args){
+
+void CommandLineParser::ParseArgs(){
     if(args.size() < 1){
         SignalIncorrectNumberOfArgs();
         return;
     }
-    if(args[0] == ADD){
-        args.erase(args.begin());
-        ManageAdd(args);
-    }
-    else if(args[0] == SET){
-        args.erase(args.begin());
-        ParseSetParams(args);
-    }
-    else if(args[0] == COPY){
-        args.erase(args.begin());
-        ParseCopyParams(args);
-    }
-    else if(args[0] == LIST){
-        args.erase(args.begin());
-        controller.ListAllBudgets();
-    }
-    else if(args[0] == INFO){
-        args.erase(args.begin());
-        ManageInfo(args);
-    }
-    else if(args[0] == EXPENSE){
-        args.erase(args.begin());
-        ParseExpenseParams(args);
+    auto it = commandMap.find(args[0]);
+    if (it != commandMap.end()) {
+        it->second();
     }
     else{
         SignalUnknownCommand(args[0]);
         return;
     }
 }
-void CommandLineParser::ManageAdd(vector<string> restArgs){
-    if(restArgs.size() < 1){
-        SignalIncorrectNumberOfArgs();
-        return;
-    }
-    if(restArgs[0] == BUDGET){
-        restArgs.erase(restArgs.begin());
-        ParseBudgetParams(restArgs);
-    }
-    else if(restArgs[0] == CATEGORY){
-        restArgs.erase(restArgs.begin());
-        ParseCategoryParams(restArgs);
-    }
-    else if(restArgs[0] == INCOME){
-        restArgs.erase(restArgs.begin());
-        ParseIncomeParams(restArgs);
-    }
-    else{
-        SignalUnknownCommand(restArgs[0]);
-        return;
-    }
+
+void CommandLineParser::ParseExpenseParams(){
+    cout << "expense" << endl;
+}
+void CommandLineParser::ParseSetPrimaryParams(){
+    cout << "setprim" << endl;
+}
+void CommandLineParser::ParseAddBudgetParams(){
+    cout << "addbudg" << endl;
+}
+void CommandLineParser::ParseAddCategoryParams(){
+    cout << "addcat" << endl;
+}
+void CommandLineParser::ParseAddIncomeParams(){
+    cout << "addinc" << endl;
+}
+void CommandLineParser::ParseCopyBudgetParams(){
+    cout << "copy" << endl;
+}
+void CommandLineParser::ParseListParams(){
+    cout << "list" << endl;
+}
+void CommandLineParser::ParseInfoBudgetParams(){
+    cout << "infobudg" << endl;
+}
+void CommandLineParser::ParseInfoCategoryParams(){
+    cout << "infocat" << endl;
+}
+void CommandLineParser::ParseHelp(){
+    cout << "hellp" << endl;
 }
 
-void CommandLineParser::ManageInfo(vector<string> restArgs){
-    if(restArgs.size() < 1){
-        SignalIncorrectNumberOfArgs();
-        return;
-    }
-    if(restArgs[0] == BUDGET){
-        restArgs.erase(restArgs.begin());
-        ParseBudgetName(restArgs); //mozna by slo udelat primo
-    }
-    else if(restArgs[0] == CATEGORY){
-        restArgs.erase(restArgs.begin());
-        ParseCategoryName(restArgs);
-    }
-}
-
-int main(int argc, char * argv[]){
+int main(int argc, char * argv[]) {
     vector<string> args (argv + 1, argv + argc);
-    CommandLineParser parser;
-    parser.ParseArgs(args);
-
+    CommandLineParser parser(args);
+    parser.ParseArgs();
     return 0;
 }
