@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+budgetApp
+*.cmake
+CMakeCache.txt
+Makefile
+CMakeFiles
