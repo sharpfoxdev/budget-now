@@ -19,20 +19,26 @@ void Controller::CopyBudget(const vector<string> & params){
     view.PrintOperationResult(success);
 }
 void Controller::AddBudget(const vector<string> & params){
-
+    bool success = model.AddBudget(params);
+    view.PrintOperationResult(success);
 }
 void Controller::AddExpense(const vector<string> & params){
-
+    bool success = model.AddExpense(params);
+    view.PrintOperationResult(success);
 }
 void Controller::AddCategory(const vector<string> & params){
-
+    bool success = model.AddCategory(params);
+    view.PrintOperationResult(success);
 }
 void Controller::AddIncome(const vector<string> & params){
-
+    bool success = model.AddIncome(params);
+    view.PrintOperationResult(success);
 }
 void Controller::PrintBudgetInfo(const vector<string> & params){
-
+    Budget budget = model.GetBudget(params);
+    view.PrintBudgetInfo(budget);
 }
 void Controller::PrintCategoryInfo(const vector<string> & params){
-
+    Category category = model.GetCategory(params);
+    view.PrintCategoryInfo(category);
 }
