@@ -1,6 +1,5 @@
 #include "commandLineParser.hpp"
 
-
 CommandLineParser::CommandLineParser(const vector<string> & args) : args(args){
     commandMap = {
     { "expense", CommandLineParser::ParseExpenseParams},
@@ -29,7 +28,7 @@ void CommandLineParser::ParseArgs(){
     }
     auto it = commandMap.find(args[0]);
     if (it != commandMap.end()) {
-        it->second();
+        it->second(*this);
     }
     else{
         SignalUnknownCommand(args[0]);
@@ -37,33 +36,41 @@ void CommandLineParser::ParseArgs(){
     }
 }
 
-void CommandLineParser::ParseExpenseParams(){
-    cout << "expense" << endl;
+void CommandLineParser::ParseExpenseParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.AddExpense(self.args);
 }
-void CommandLineParser::ParseSetPrimaryParams(){
-    cout << "setprim" << endl;
+void CommandLineParser::ParseSetPrimaryParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.SetPrimaryBudget(self.args);
 }
-void CommandLineParser::ParseAddBudgetParams(){
-    cout << "addbudg" << endl;
+void CommandLineParser::ParseAddBudgetParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.AddBudget(self.args);
 }
-void CommandLineParser::ParseAddCategoryParams(){
-    cout << "addcat" << endl;
+void CommandLineParser::ParseAddCategoryParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.AddCategory(self.args);
 }
-void CommandLineParser::ParseAddIncomeParams(){
-    cout << "addinc" << endl;
+void CommandLineParser::ParseAddIncomeParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.AddIncome(self.args);
 }
-void CommandLineParser::ParseCopyBudgetParams(){
-    cout << "copy" << endl;
+void CommandLineParser::ParseCopyBudgetParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.CopyBudget(self.args);
 }
-void CommandLineParser::ParseListParams(){
-    cout << "list" << endl;
+void CommandLineParser::ParseListParams(CommandLineParser self){
+    self.controller.ListAllBudgets();
 }
-void CommandLineParser::ParseInfoBudgetParams(){
-    cout << "infobudg" << endl;
+void CommandLineParser::ParseInfoBudgetParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.PrintBudgetInfo(self.args);
 }
-void CommandLineParser::ParseInfoCategoryParams(){
-    cout << "infocat" << endl;
+void CommandLineParser::ParseInfoCategoryParams(CommandLineParser self){
+    self.args.erase(self.args.begin());
+    self.controller.PrintCategoryInfo(self.args);
 }
-void CommandLineParser::ParseHelp(){
-    cout << "hellp" << endl;
+void CommandLineParser::ParseHelp(CommandLineParser self){
+    self.controller.PrintHelp();
 }
