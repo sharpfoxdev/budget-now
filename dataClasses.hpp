@@ -1,5 +1,5 @@
-#ifndef VIEW_H
-#define VIEW_H
+#ifndef DATA_H
+#define DATA_H
 
 class Expense{
 
