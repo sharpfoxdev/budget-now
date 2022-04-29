@@ -18,9 +18,14 @@ void View::PrintCategoryInfo(dataNS::Category category){
 
 }
 void View::PrintBudgetsList(dataNS::BudgetsHolder budgets){
-    cout << budgets.primaryBudgetName << " - primary budget" << endl;
-    for ( const auto &myPair : budgets.otherBudgets ) {
-        std::cout << myPair.first << endl;
+    if(budgets.primaryBudgetName == "" && budgets.otherBudgets.size() == 0){
+        cout << "No budgets specified. " << endl;
+    }
+    else{
+        cout << budgets.primaryBudgetName << " - primary budget" << endl;
+        for ( const auto &myPair : budgets.otherBudgets ) {
+            std::cout << myPair.first << endl;
+        }
     }
 }
 

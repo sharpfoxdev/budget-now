@@ -13,7 +13,7 @@ using namespace std;
 
 class Model{
 public:
-    dataNS::BudgetsHolder GetAllBudgets();
+    dataNS::BudgetsHolder GetBudgetsHolder();
     bool CopyBudget(const vector<string> & params);
     bool SetPrimaryBudget(const vector<string> & params);
     bool AddBudget(const vector<string> & params);
@@ -25,6 +25,7 @@ public:
 private:
     dataNS::BudgetsHolder allBudgets;
     void SaveBudgetsHolder(dataNS::BudgetsHolder bh);
+    const string jsonFile = "budgetData.json";
 };
 
 #endif

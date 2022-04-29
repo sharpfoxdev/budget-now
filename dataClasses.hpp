@@ -18,13 +18,12 @@ namespace dataNS{
         string comment;
     };
     struct Category{
-        string name;
         double budgeted;
         vector<Expense> expenses;
     };
     struct Budget{
         vector<Income> incomes;
-        vector<Category> categories;
+        map<string, Category> categories;
     };
     struct BudgetsHolder{
         string primaryBudgetName;

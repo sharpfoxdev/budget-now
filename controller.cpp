@@ -11,7 +11,7 @@ void Controller::SetPrimaryBudget(const vector<string> & params){
     view.PrintOperationResult(success);
 }
 void Controller::ListAllBudgets(){
-    dataNS::BudgetsHolder budgets = model.GetAllBudgets();
+    dataNS::BudgetsHolder budgets = model.GetBudgetsHolder();
     view.PrintBudgetsList(budgets);
 }
 void Controller::CopyBudget(const vector<string> & params){
