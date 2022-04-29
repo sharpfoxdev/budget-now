@@ -12,14 +12,16 @@
 
 using namespace std;
 
-
+/**
+ * @brief Parses CLI commands and calls Controller with command's parameters
+ * 
+ */
 class CommandLineParser{
 public:
     void ParseArgs();
     CommandLineParser(const vector<string> & args);
 private:
     using MapType = std::map<string, std::function<void(CommandLineParser &)>>;
-
     vector<string> args;
     MapType commandMap;
     Controller controller;

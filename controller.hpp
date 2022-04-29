@@ -8,6 +8,10 @@
 #include "view.hpp"
 
 using namespace std;
+
+/**
+ * @brief Calls Model to get/set data and then calls View to show them to the user on CLI
+ */
 class Controller{
 public: 
     void ListAllBudgets();
