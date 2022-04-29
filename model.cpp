@@ -166,6 +166,27 @@ bool Model::AddCategory(const vector<string> & params){
     return true;
 }
 bool Model::AddIncome(const vector<string> & params){
+    dataNS::BudgetsHolder bh = GetBudgetsHolder();
+    //check that we have primary budget
+    if(bh.primaryBudgetName == ""){
+        return false;
+    }
+    if(params.size() < 1){
+        return false;
+    }
+    dataNS::Income income;
+    try{
+        income.amount = std::stod(params[0]);
+    }
+    catch(...){
+        return false;
+    }
+    //we have comment as well with the expense
+    if(params.size() == 2){
+        income.comment = params[1];
+    }
+    bh.primaryBudget.incomes.push_back(income);
+    SaveBudgetsHolder(bh);
     return true;
 }
 dataNS::Budget Model::GetBudget(const vector<string> & params){
