@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -15,6 +16,7 @@ public:
     void PrintOperationResult(bool success);
     void PrintBudgetInfo(dataNS::Budget budget);
     void PrintCategoryInfo(dataNS::Category category);
+    void PrintSpendingSpeed(dataNS::Category category);
 };
 
 

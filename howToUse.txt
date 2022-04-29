@@ -1,0 +1,43 @@
+======
+Usage
+======
+list
+    - lists all budgets
+
+add_budget <budget_name>
+    - creates budget with given unique name
+
+set_primary <budget_name>
+    - sets given budget as primary
+
+copy_budget <new_budget_name> <old_budget_name>
+    - copies from old budget categories and their budgeted amounts
+
+add_category <category_name> <amount_to_budget>
+    - creates category with given name and 
+    adds it into the primary budget
+    - amount_to_budget is amount, you would like to spend
+    in given category
+
+change_budgeted_amount <category_name> <new_amount_to_budget>
+    - changes budgeted amount for given category in primary budget
+
+add_income <amount> <comment>
+    - adds income with given amount into the
+    primary budget
+    - you can add non mandatory comment to the income
+
+expense <category> <amount> <comment>
+    - adds expense into given category in the primary budget
+    - comment is not mandatory
+
+info_budget
+    - prints information about primary budget
+    - prints categories, total income, total expenses, budgeted amount and left to budget amount
+
+info_category <category_name>
+    - prints info about given category in primary budget
+    - prints expenses, budgeted amount, amount spent
+
+--help
+    - prints this help

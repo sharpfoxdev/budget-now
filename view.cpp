@@ -1,7 +1,11 @@
 #include "view.hpp"
 
 void View::PrintHelp(){
-    cout << "Printing help from view. " << endl;
+    std::ifstream f("howToUse.txt");
+
+    if (f.is_open()){
+        std::cout << f.rdbuf();
+    }
 }
 void View::PrintOperationResult( bool success){
     if(success){

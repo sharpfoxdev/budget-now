@@ -190,6 +190,16 @@ bool Model::AddIncome(const vector<string> & params){
     return true;
 }
 dataNS::Budget Model::GetBudget(const vector<string> & params){
+    //TODOOOOO
+    dataNS::BudgetsHolder bh = GetBudgetsHolder();
+    if(params.size() != 1){
+        //return false;
+    }
+    //searching for given budget
+    auto it = bh.otherBudgets.find(params[0]);
+    if (it == bh.otherBudgets.end()) {
+        //return false;
+    }
     dataNS::Budget budget;
     return budget;
 }
