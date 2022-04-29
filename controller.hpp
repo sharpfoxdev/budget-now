@@ -9,7 +9,6 @@
 
 using namespace std;
 class Controller{
-    //posila raw veci na model
 public: 
     void ListAllBudgets();
     void CopyBudget(const vector<string> & params);

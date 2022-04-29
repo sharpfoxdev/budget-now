@@ -7,11 +7,11 @@ void Controller::SetPrimaryBudget(const vector<string> & params){
     /*for(const auto& arg : params){
         cout << arg << endl;
     }*/
-    bool success = model.CopyBudget(params);
+    bool success = model.SetPrimaryBudget(params);
     view.PrintOperationResult(success);
 }
 void Controller::ListAllBudgets(){
-    vector<dataNS::Budget> budgets = model.GetAllBudgets();
+    dataNS::BudgetsHolder budgets = model.GetAllBudgets();
     view.PrintBudgetsList(budgets);
 }
 void Controller::CopyBudget(const vector<string> & params){

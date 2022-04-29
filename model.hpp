@@ -13,7 +13,7 @@ using namespace std;
 
 class Model{
 public:
-    vector<dataNS::Budget> GetAllBudgets();
+    dataNS::BudgetsHolder GetAllBudgets();
     bool CopyBudget(const vector<string> & params);
     bool SetPrimaryBudget(const vector<string> & params);
     bool AddBudget(const vector<string> & params);
@@ -23,7 +23,8 @@ public:
     dataNS::Budget GetBudget(const vector<string> & params);
     dataNS::Category GetCategory(const vector<string> & params);
 private:
-    vector<dataNS::Budget> allBudgets;
+    dataNS::BudgetsHolder allBudgets;
+    void SaveBudgetsHolder(dataNS::BudgetsHolder bh);
 };
 
 #endif

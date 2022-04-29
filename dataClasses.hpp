@@ -10,16 +10,26 @@ using namespace std;
 
 namespace dataNS{
     struct Expense{
-        float amount;
+        double amount;
+        string comment;
+    };
+    struct Income{
+        double amount;
         string comment;
     };
     struct Category{
         string name;
-        float budgeted;
+        double budgeted;
         vector<Expense> expenses;
     };
     struct Budget{
-
+        vector<Income> incomes;
+        vector<Category> categories;
+    };
+    struct BudgetsHolder{
+        string primaryBudgetName;
+        Budget primaryBudget;
+        map<string, Budget> otherBudgets;
     };
 }
 

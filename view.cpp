@@ -17,7 +17,10 @@ void View::PrintBudgetInfo(dataNS::Budget budget){
 void View::PrintCategoryInfo(dataNS::Category category){
 
 }
-void View::PrintBudgetsList(vector<dataNS::Budget> budgets){
-
+void View::PrintBudgetsList(dataNS::BudgetsHolder budgets){
+    cout << budgets.primaryBudgetName << " - primary budget" << endl;
+    for ( const auto &myPair : budgets.otherBudgets ) {
+        std::cout << myPair.first << endl;
+    }
 }
 
