@@ -11,13 +11,13 @@ void View::PrintOperationResult( bool success){
         cout << "Operation unsuccessful, please repeat the operation. " << endl;
     }
 }
-void View::PrintBudgetInfo(Budget budget){
+void View::PrintBudgetInfo(dataNS::Budget budget){
 
 }
-void View::PrintCategoryInfo(Category category){
+void View::PrintCategoryInfo(dataNS::Category category){
 
 }
-void View::PrintBudgetsList(vector<Budget> budgets){
-    
+void View::PrintBudgetsList(vector<dataNS::Budget> budgets){
+
 }
 

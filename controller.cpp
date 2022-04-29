@@ -11,7 +11,7 @@ void Controller::SetPrimaryBudget(const vector<string> & params){
     view.PrintOperationResult(success);
 }
 void Controller::ListAllBudgets(){
-    vector<Budget> budgets = model.GetAllBudgets();
+    vector<dataNS::Budget> budgets = model.GetAllBudgets();
     view.PrintBudgetsList(budgets);
 }
 void Controller::CopyBudget(const vector<string> & params){
@@ -35,10 +35,10 @@ void Controller::AddIncome(const vector<string> & params){
     view.PrintOperationResult(success);
 }
 void Controller::PrintBudgetInfo(const vector<string> & params){
-    Budget budget = model.GetBudget(params);
+    dataNS::Budget budget = model.GetBudget(params);
     view.PrintBudgetInfo(budget);
 }
 void Controller::PrintCategoryInfo(const vector<string> & params){
-    Category category = model.GetCategory(params);
+    dataNS::Category category = model.GetCategory(params);
     view.PrintCategoryInfo(category);
 }

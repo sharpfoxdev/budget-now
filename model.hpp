@@ -5,19 +5,25 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include "json.hpp"
 
+using json = nlohmann::json;
 using namespace std;
+
 class Model{
 public:
-    vector<Budget> GetAllBudgets();
+    vector<dataNS::Budget> GetAllBudgets();
     bool CopyBudget(const vector<string> & params);
     bool SetPrimaryBudget(const vector<string> & params);
     bool AddBudget(const vector<string> & params);
     bool AddExpense(const vector<string> & params);
     bool AddCategory(const vector<string> & params);
     bool AddIncome(const vector<string> & params);
-    Budget GetBudget(const vector<string> & params);
-    Category GetCategory(const vector<string> & params);
+    dataNS::Budget GetBudget(const vector<string> & params);
+    dataNS::Category GetCategory(const vector<string> & params);
+private:
+    vector<dataNS::Budget> allBudgets;
 };
 
 #endif
