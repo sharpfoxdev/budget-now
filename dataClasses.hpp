@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "json.hpp"
+#include "date.h"
 
 using json = nlohmann::json;
 using namespace std;
@@ -15,12 +16,27 @@ using namespace std;
  * in json.hpp library. 
  */
 namespace dataNS{
+    struct DateStruct{
+        unsigned int day;
+        unsigned int month;
+        int year;
+        bool operator<=(const DateStruct& other) const
+        {
+            auto ymdLeft = date::year{this->year}/this->month/this->day;
+            auto ymdRight = date::year{other.year}/other.month/other.day;
+            if(!ymdLeft.ok() || !ymdLeft.ok()){
+                throw std::invalid_argument("compare error");
+            }
+            return (ymdLeft <= ymdRight); 
+        }
+    };
     /**
      * @brief Expense structure
      */
     struct Expense{
         double amount;
         string comment;
+        DateStruct date;
     };
     /**
      * @brief Income structure
@@ -42,6 +58,8 @@ namespace dataNS{
     struct Budget{
         vector<Income> incomes;
         map<string, Category> categories;
+        DateStruct start;
+        DateStruct end;
     };
     /**
      * @brief Structure holding all budgets.
@@ -52,6 +70,7 @@ namespace dataNS{
         Budget primaryBudget;
         map<string, Budget> otherBudgets;
     };
+
 }
 
 #endif

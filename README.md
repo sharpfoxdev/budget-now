@@ -61,7 +61,7 @@ To add expense in given category in primary budget run:
 ```
 ./budgetApp expense food 200 tesco
 ```
-This will add expense of 200 in `food` category with comment `tesco`. Comment is not mandatory. 
+This will add expense of 200 in `food` category with comment `tesco`. If date is not specified, todays date will be assumed. 
 
 ### Printing information about budget
 To print basic information and statistics about given budget, run:
@@ -82,7 +82,7 @@ This will print information about category and all expenses within.
 ### Create copy of budget
 If you spend same amount of money every budget and don't want to create new budget and new categories every time, you can run 
 ```
-./budgetApp copy_budget march22 feb22
+./budgetApp copy_budget feb22 march22
 ```
 This will create new budget march22 and copy all categories and budgeted amounts within them into the new budget. All you have to do now is switch primary budget from `feb22` to `march22`, add income and you are ready to add expenses when you need to. 
 

@@ -27,6 +27,8 @@ void View::PrintOperationResult( bool success){
  * @param budget Budget to display
  */
 void View::PrintBudgetInfo(dataNS::Budget budget){
+    cout << "Start: " << budget.start.day << "." << budget.start.month << "." << budget.start.year << endl;
+    cout << "End: " << budget.end.day << "." << budget.end.month << "." << budget.end.year << endl;
     double totalIncome = 0;
     double totalExpenditure = 0;
     double totalBudgeted = 0;
@@ -64,6 +66,7 @@ void View::PrintCategoryInfo(dataNS::Category category){
     double expenseInCategory = 0;
     cout << "Expenses: " << endl;
     for(const auto & expense : category.expenses){
+        cout << expense.date.day << "." << expense.date.month << "." << expense.date.year;
         cout << "   " << expense.amount << " " << expense.comment << endl;
         expenseInCategory += expense.amount;
     }

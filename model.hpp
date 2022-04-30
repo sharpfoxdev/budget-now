@@ -7,9 +7,14 @@
 #include <iostream>
 #include <fstream>
 #include "json.hpp"
+#include "date.h"
+#include "dateManager.hpp"
+
 
 using json = nlohmann::json;
 using namespace std;
+using namespace std::chrono;
+using namespace date;
 
 class Model{
 public:
@@ -23,6 +28,7 @@ public:
     dataNS::Budget GetBudget(const vector<string> & params);
     dataNS::Category GetCategory(const vector<string> & params);
 private:
+    DateManager dateManager;
     dataNS::BudgetsHolder allBudgets;
     void SaveBudgetsHolder(dataNS::BudgetsHolder bh);
     const string jsonFile = "budgetData.json";

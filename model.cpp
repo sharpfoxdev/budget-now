@@ -6,8 +6,11 @@ namespace dataNS{
      * @param j json
      * @param e Expense structure
      */
+    void to_json(json& j, const DateStruct& d){
+        j = json{{"day", d.day}, {"month", d.month}, {"year", d.year}};
+    }
     void to_json(json& j, const Expense& e) {
-        j = json{{"amount", e.amount}, {"comment", e.comment}};
+        j = json{{"amount", e.amount}, {"comment", e.comment}, {"date", e.date}};
     }
     void to_json(json& j, const Income& i) {
         j = json{{"amount", i.amount}, {"comment", i.comment}};
@@ -16,7 +19,7 @@ namespace dataNS{
         j = json{{"budgeted", c.budgeted}, {"expenses", c.expenses}};
     }
     void to_json(json& j, const Budget& b){
-        j = json{{"incomes", b.incomes}, {"categories", b.categories}};
+        j = json{{"incomes", b.incomes}, {"categories", b.categories}, {"start", b.start}, {"end", b.end}};
     }
     void to_json(json& j, const BudgetsHolder& h){
         j = json{{"primaryBudgetName", h.primaryBudgetName}, {"primaryBudget", h.primaryBudget}, {"otherBudgets", h.otherBudgets}};
@@ -27,9 +30,15 @@ namespace dataNS{
      * @param j json
      * @param e expense structure
      */
+    void from_json(const json& j, DateStruct& d){
+        j.at("day").get_to(d.day);
+        j.at("month").get_to(d.month);
+        j.at("year").get_to(d.year);
+    }
     void from_json(const json& j, Expense& e) {
         j.at("amount").get_to(e.amount);
         j.at("comment").get_to(e.comment);
+        j.at("date").get_to(e.date);
     }
     void from_json(const json& j, Income& i) {
         j.at("amount").get_to(i.amount);
@@ -42,12 +51,15 @@ namespace dataNS{
     void from_json(const json& j, Budget& b){
         j.at("incomes").get_to(b.incomes);
         j.at("categories").get_to(b.categories);
+        j.at("start").get_to(b.start);
+        j.at("end").get_to(b.end);
     }
     void from_json(const json& j, BudgetsHolder& h){
         j.at("primaryBudgetName").get_to(h.primaryBudgetName);
         j.at("primaryBudget").get_to(h.primaryBudget);
         j.at("otherBudgets").get_to(h.otherBudgets);
     }
+
 }
 /**
  * @brief Signals to the user incorrect number of command
@@ -111,12 +123,29 @@ void Model::SaveBudgetsHolder(dataNS::BudgetsHolder bh){
  */
 bool Model::CopyBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
-    if(params.size() < 2){
+    if(params.size() < 4){
         SignalIncorrectNumberOfParams();
         return false;
     }
-    string newName = params[0];
-    string oldName = params[1];
+    string oldName = params[0];
+    string newName = params[1];
+    string startDateString = params[2];
+    string endDateString = params[3];
+    dataNS::DateStruct startDateParsed;
+    dataNS::DateStruct endDateParsed;
+    //parsing date
+    try{
+        startDateParsed = dateManager.ParseDate(startDateString);
+        endDateParsed = dateManager.ParseDate(endDateString);
+    }
+    catch(...){
+        SignalIncorrectParamType();
+        return false;
+    }
+    if(!(startDateParsed <= endDateParsed)){
+        cout << "first date should be smaller than second. " << endl;
+        return false;
+    }
     //Get old budget
     dataNS::Budget oldBudget;
     try{
@@ -127,6 +156,8 @@ bool Model::CopyBudget(const vector<string> & params){
         return false;
     }
     dataNS::Budget newBudget;
+    newBudget.start = startDateParsed;
+    newBudget.end = endDateParsed;
     //search duplicate name
     auto it = bh.otherBudgets.find(newName);
     if (it != bh.otherBudgets.end() || bh.primaryBudgetName == newName) {
@@ -188,11 +219,29 @@ bool Model::SetPrimaryBudget(const vector<string> & params){
  */
 bool Model::AddBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
-    if(params.size() < 1){
+    if(params.size() < 3){
         SignalIncorrectNumberOfParams();
         return false;
     }
     string name = params[0];
+    string startDateString = params[1];
+    string endDateString = params[2];
+    dataNS::DateStruct startDateParsed;
+    dataNS::DateStruct endDateParsed;
+    //parsing date
+    try{
+        startDateParsed = dateManager.ParseDate(startDateString);
+        endDateParsed = dateManager.ParseDate(endDateString);
+    }
+    catch(...){
+        SignalIncorrectParamType();
+        return false;
+    }
+    if(!(startDateParsed <= endDateParsed)){
+        cout << "first date should be smaller than second. " << endl;
+        return false;
+    }
+
     //check for duplicates
     auto it = bh.otherBudgets.find(name);
     if (it != bh.otherBudgets.end() || bh.primaryBudgetName == name) {
@@ -201,6 +250,9 @@ bool Model::AddBudget(const vector<string> & params){
         return false;
     }
     dataNS::Budget budget;
+    budget.start = startDateParsed;
+    budget.end = endDateParsed;
+    cout << budget.start.day << " " << budget.start.month << " " << budget.start.year << endl;
     if(bh.primaryBudgetName == ""){
         //we have no budgets yet, this is the first one
         //so we set it as primary
@@ -226,19 +278,22 @@ bool Model::AddExpense(const vector<string> & params){
         SignalNoPrimaryBudget();
         return false;
     }
-    if(params.size() < 2){
+    if(params.size() < 3){
         SignalIncorrectNumberOfParams();
         return false;
     }
+    dataNS::Expense expense;
     string categoryName = params[0];
     string amount = params[1];
+    expense.comment = params[2];
+    string date = params[3];
+
     //searching for given category in primary budget
     auto it = bh.primaryBudget.categories.find(categoryName);
     if (it == bh.primaryBudget.categories.end()) {
         cout << "Couldn't find category: " << categoryName << endl;
         return false;
     }
-    dataNS::Expense expense;
     try{
         // parsing expense amount
         expense.amount = std::stod(amount);
@@ -247,14 +302,31 @@ bool Model::AddExpense(const vector<string> & params){
         SignalIncorrectParamType();
         return false;
     }
-    //we have comment as well with the expense
+
+    if(params.size() >= 4){
+        try{
+            dataNS::DateStruct dateParsed = dateManager.ParseDate(date);
+            expense.date = dateParsed;
+        }
+        catch(...){
+            SignalIncorrectParamType();
+            return false;
+        }
+    }
     if(params.size() == 3){
-        expense.comment = params[2];
+        expense.date = dateManager.GetTodaysDate();
+    }
+    bool correctDate = dateManager.DateInBetweenOtherDates(bh.primaryBudget.start, expense.date, bh.primaryBudget.end);
+    if(!correctDate){
+        cout << "Expense date not in the budget date range. " << endl;
+        return false;
     }
     it->second.expenses.push_back(expense);
+    dateManager.SignalSpendingSpeed(bh.primaryBudget.start, bh.primaryBudget.end, expense.date, it->second);
     SaveBudgetsHolder(bh);
     return true;
 }
+
 /**
  * @brief Adds category to primary budget
  * @param params category name[0], budgeted amount[1]
