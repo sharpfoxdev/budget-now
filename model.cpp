@@ -37,6 +37,18 @@ namespace dataNS{
         j.at("otherBudgets").get_to(h.otherBudgets);
     }
 }
+void Model::SignalIncorrectNumberOfParams(){
+    cout << "Incorrect number of parameters. " << endl;
+}
+void Model::SignalIncorrectParamType(){
+    cout << "Incorrect parameter type. " << endl;
+}
+void Model::SignalUsedName(){
+    cout << "You are trying to use name that is used elsewhere. " << endl;
+}
+void Model::SignalNoPrimaryBudget(){
+    cout << "There is no primary budget set. " << endl;
+}
 dataNS::BudgetsHolder Model::GetBudgetsHolder(){
     try{
         ifstream fs(jsonFile);
@@ -76,11 +88,13 @@ bool Model::CopyBudget(const vector<string> & params){
 bool Model::SetPrimaryBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() != 1){
+        SignalIncorrectNumberOfParams();
         return false;
     }
     //searching for given budget
     auto it = bh.otherBudgets.find(params[0]);
     if (it == bh.otherBudgets.end()) {
+        cout << "Couldn't locate budget: " << params[0] << endl;
         return false;
     }
     //making copies, because inserting into map can make it broken possibly, since we are working with iterators
@@ -99,10 +113,18 @@ bool Model::SetPrimaryBudget(const vector<string> & params){
 bool Model::AddBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() < 1){
+        SignalIncorrectNumberOfParams();
         return false;
     }
     string name = params[0];
     dataNS::Budget budget;
+    //check for duplicates
+    auto it = bh.otherBudgets.find(name);
+    if (it != bh.otherBudgets.end() || bh.primaryBudgetName == name) {
+        //found duplicate
+        SignalUsedName();
+        return false;
+    }
     if(bh.primaryBudgetName == ""){
         bh.primaryBudgetName = name;
         bh.primaryBudget = budget;
@@ -117,14 +139,17 @@ bool Model::AddExpense(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
     if(bh.primaryBudgetName == ""){
+        SignalNoPrimaryBudget();
         return false;
     }
     if(params.size() < 2){
+        SignalIncorrectNumberOfParams();
         return false;
     }
     //searching for given category in primary budget
     auto it = bh.primaryBudget.categories.find(params[0]);
     if (it == bh.primaryBudget.categories.end()) {
+        cout << "Couldn't find category: " << params[0] << endl;
         return false;
     }
     dataNS::Expense expense;
@@ -132,6 +157,7 @@ bool Model::AddExpense(const vector<string> & params){
         expense.amount = std::stod(params[1]);
     }
     catch(...){
+        SignalIncorrectParamType();
         return false;
     }
     //we have comment as well with the expense
@@ -146,9 +172,11 @@ bool Model::AddCategory(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
     if(bh.primaryBudgetName == ""){
+        SignalNoPrimaryBudget();
         return false;
     }
     if(params.size() < 2){
+        SignalIncorrectNumberOfParams();
         return false;
     }
     //params parsing
@@ -159,8 +187,17 @@ bool Model::AddCategory(const vector<string> & params){
         category.budgeted = budgeted;
     }
     catch(...){
+        SignalIncorrectParamType();
         return false;
     }
+    //check for duplicate
+    auto it = bh.primaryBudget.categories.find(name);
+    if (it != bh.primaryBudget.categories.end()) {
+        //we found duplicate
+        SignalUsedName();
+        return false;
+    }
+
     bh.primaryBudget.categories.insert(make_pair(name, category));
     SaveBudgetsHolder(bh);
     return true;
@@ -169,9 +206,11 @@ bool Model::AddIncome(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
     if(bh.primaryBudgetName == ""){
+        SignalNoPrimaryBudget();
         return false;
     }
     if(params.size() < 1){
+        SignalIncorrectNumberOfParams();
         return false;
     }
     dataNS::Income income;
@@ -179,6 +218,7 @@ bool Model::AddIncome(const vector<string> & params){
         income.amount = std::stod(params[0]);
     }
     catch(...){
+        SignalIncorrectParamType();
         return false;
     }
     //we have comment as well with the expense

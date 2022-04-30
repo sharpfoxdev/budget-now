@@ -26,6 +26,10 @@ private:
     dataNS::BudgetsHolder allBudgets;
     void SaveBudgetsHolder(dataNS::BudgetsHolder bh);
     const string jsonFile = "budgetData.json";
+    void SignalIncorrectNumberOfParams();
+    void SignalIncorrectParamType();
+    void SignalUsedName();
+    void SignalNoPrimaryBudget();
 };
 
 #endif
