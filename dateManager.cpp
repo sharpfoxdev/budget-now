@@ -1,5 +1,15 @@
 #include "dateManager.hpp"
 
+/**
+ * @brief Computes how quickly the user is spending the budget. 
+ * It computes average total expense in the day of expense and
+ * then it gives 20%+- range, within which actuall total expense
+ * that day should be.
+ * @param startDate start date of budget
+ * @param endDate end date of budget
+ * @param expenseDate date of the expense
+ * @param category category of expense
+ */
 void DateManager::SignalSpendingSpeed(const dataNS::DateStruct & startDate, const dataNS::DateStruct & endDate, const dataNS::DateStruct & expenseDate, const dataNS::Category & category){
     auto ymdStart = year{startDate.year}/startDate.month/startDate.day;
     auto ymdEnd = year{endDate.year}/endDate.month/endDate.day;
