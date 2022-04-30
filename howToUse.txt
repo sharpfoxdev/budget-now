@@ -31,10 +31,11 @@ expense <category> <amount> <comment>
     - adds expense into given category in the primary budget
     - comment is not mandatory
 
-info_budget
+info_budget <budget_name>
     - prints information about primary budget
     - prints categories, total income, total expenses, budgeted amount and left to budget amount
-
+    - if budget name is omited, it will print primary budget
+    
 info_category <category_name>
     - prints info about given category in primary budget
     - prints expenses, budgeted amount, amount spent

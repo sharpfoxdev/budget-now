@@ -230,20 +230,41 @@ bool Model::AddIncome(const vector<string> & params){
     return true;
 }
 dataNS::Budget Model::GetBudget(const vector<string> & params){
-    //TODOOOOO
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
+    if(params.size() == 0){
+        //no arguments, print primary budget
+        return bh.primaryBudget;
+    }
     if(params.size() != 1){
-        //return false;
+        SignalIncorrectNumberOfParams();
+        //todo raise exception
+    }
+    string name = params[0];
+    if(bh.primaryBudgetName == name){
+        return bh.primaryBudget;
     }
     //searching for given budget
-    auto it = bh.otherBudgets.find(params[0]);
+    auto it = bh.otherBudgets.find(name);
     if (it == bh.otherBudgets.end()) {
+        cout << "Couldnt locate given budget. " << endl;
         //return false;
+        //todo exception
     }
-    dataNS::Budget budget;
-    return budget;
+    return it->second;
 }
 dataNS::Category Model::GetCategory(const vector<string> & params){
-    dataNS::Category cat;
-    return cat;
+    dataNS::BudgetsHolder bh = GetBudgetsHolder();
+    if(params.size() != 1){
+        SignalIncorrectNumberOfParams();
+        //todo raise exception
+    }
+    string name = params[0];
+    //searching for given budget
+    auto it = bh.primaryBudget.categories.find(name);
+    if (it == bh.primaryBudget.categories.end()) {
+        cout << "Couldnt locate given category. " << endl;
+        //return false;
+        //todo exception
+    }
+    return it->second;
 }
