@@ -1,5 +1,11 @@
 #include "model.hpp"
 namespace dataNS{
+    /**
+     * @brief Functions, that are called by json library when converting structures
+     * into json
+     * @param j json
+     * @param e Expense structure
+     */
     void to_json(json& j, const Expense& e) {
         j = json{{"amount", e.amount}, {"comment", e.comment}};
     }
@@ -15,6 +21,12 @@ namespace dataNS{
     void to_json(json& j, const BudgetsHolder& h){
         j = json{{"primaryBudgetName", h.primaryBudgetName}, {"primaryBudget", h.primaryBudget}, {"otherBudgets", h.otherBudgets}};
     }
+    /**
+     * @brief Functions, that are called by json library when converting structures
+     * from json
+     * @param j json
+     * @param e expense structure
+     */
     void from_json(const json& j, Expense& e) {
         j.at("amount").get_to(e.amount);
         j.at("comment").get_to(e.comment);
@@ -37,18 +49,37 @@ namespace dataNS{
         j.at("otherBudgets").get_to(h.otherBudgets);
     }
 }
+/**
+ * @brief Signals to the user incorrect number of command
+ * parameters were used. 
+ */
 void Model::SignalIncorrectNumberOfParams(){
     cout << "Incorrect number of parameters. " << endl;
 }
+/**
+ * @brief Signals to the user incorrect type of parameter
+ * was used
+ */
 void Model::SignalIncorrectParamType(){
     cout << "Incorrect parameter type. " << endl;
 }
+/**
+ * @brief Signals to the user, that he is trying to make a
+ * duplicate name (of budget, category).
+ */
 void Model::SignalUsedName(){
     cout << "You are trying to use name that is used elsewhere. " << endl;
 }
+/**
+ * @brief Signals to the user, that no primary budget is set. 
+ */
 void Model::SignalNoPrimaryBudget(){
     cout << "There is no primary budget set. " << endl;
 }
+/**
+ * @brief Gets budgets holder from .json file
+ * @return dataNS::BudgetsHolder 
+ */
 dataNS::BudgetsHolder Model::GetBudgetsHolder(){
     try{
         ifstream fs(jsonFile);
@@ -62,39 +93,78 @@ dataNS::BudgetsHolder Model::GetBudgetsHolder(){
         return bh;
     }
 }
+/**
+ * @brief Saves budgets holder into a .json file
+ * @param bh budgets holder
+ */
 void Model::SaveBudgetsHolder(dataNS::BudgetsHolder bh){
     json j;
     j = bh;
     std::ofstream ofstr(jsonFile);
     ofstr << std::setw(4) << j << std::endl;
 }
-
+/**
+ * @brief Creates new budget and copies category names and budgeted amounts from old budget
+ * @param params [0] new_budget_name, [1] old_budget_name
+ * @return true operation successful
+ * @return false operation not successful
+ */
 bool Model::CopyBudget(const vector<string> & params){
-
-    // write prettified JSON to another file
-    /*json j;
-    dataNS::Expense ex{52, "haha"};
-    dataNS::Expense ex2{98.3, "hehe"};
-    dataNS::Income inc{800, "incc"};
-    vector<dataNS::Expense> vec = {ex, ex2};
-    dataNS::Category cat{"categ", 800, vec};
-    dataNS::Budget budg{vector<dataNS::Income>{inc}, vector<dataNS::Category>{cat}};
-    dataNS::BudgetsHolder bh{"none", budg, map<string, dataNS::Budget>{make_pair("leden", budg)}};
-    j = bh;
-    std::ofstream ofstr(jsonFile);
-    ofstr << std::setw(4) << j << std::endl;*/
+    dataNS::BudgetsHolder bh = GetBudgetsHolder();
+    if(params.size() < 2){
+        SignalIncorrectNumberOfParams();
+        return false;
+    }
+    string newName = params[0];
+    string oldName = params[1];
+    //Get old budget
+    dataNS::Budget oldBudget;
+    try{
+        oldBudget = GetBudget(vector<string>{oldName});
+    }
+    catch(...){
+        cout << "Couldn't locate old budget: " << oldName << endl;
+        return false;
+    }
+    dataNS::Budget newBudget;
+    //search duplicate name
+    auto it = bh.otherBudgets.find(newName);
+    if (it != bh.otherBudgets.end() || bh.primaryBudgetName == newName) {
+        //found duplicate
+        SignalUsedName();
+        return false;
+    }
+    //iterate over old budget categories and copy them into new one
+    for(const auto &myPair : oldBudget.categories){
+        dataNS::Category newCategory;
+        newCategory.budgeted = myPair.second.budgeted;
+        newBudget.categories.insert(make_pair(myPair.first, newCategory));
+    }
+    bh.otherBudgets.insert(make_pair(newName, newBudget));
+    SaveBudgetsHolder(bh);
     return true;
 }
+/**
+ * @brief Sets given budget as primary
+ * @param params 
+ * @return true operation successful
+ * @return false operation not successful
+ */
 bool Model::SetPrimaryBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() != 1){
         SignalIncorrectNumberOfParams();
         return false;
     }
+    string name = params[0];
+    if(bh.primaryBudgetName == name){
+        // budget is already primary
+        return true;
+    }
     //searching for given budget
-    auto it = bh.otherBudgets.find(params[0]);
+    auto it = bh.otherBudgets.find(name);
     if (it == bh.otherBudgets.end()) {
-        cout << "Couldn't locate budget: " << params[0] << endl;
+        cout << "Couldn't locate budget: " << name << endl;
         return false;
     }
     //making copies, because inserting into map can make it broken possibly, since we are working with iterators
@@ -110,6 +180,12 @@ bool Model::SetPrimaryBudget(const vector<string> & params){
     SaveBudgetsHolder(bh);
     return true;
 }
+/**
+ * @brief Adds new budget into budgets holder
+ * @param params budget name [0]
+ * @return true operation successful
+ * @return false operation not successful
+ */
 bool Model::AddBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() < 1){
@@ -117,7 +193,6 @@ bool Model::AddBudget(const vector<string> & params){
         return false;
     }
     string name = params[0];
-    dataNS::Budget budget;
     //check for duplicates
     auto it = bh.otherBudgets.find(name);
     if (it != bh.otherBudgets.end() || bh.primaryBudgetName == name) {
@@ -125,7 +200,10 @@ bool Model::AddBudget(const vector<string> & params){
         SignalUsedName();
         return false;
     }
+    dataNS::Budget budget;
     if(bh.primaryBudgetName == ""){
+        //we have no budgets yet, this is the first one
+        //so we set it as primary
         bh.primaryBudgetName = name;
         bh.primaryBudget = budget;
     }
@@ -135,6 +213,12 @@ bool Model::AddBudget(const vector<string> & params){
     SaveBudgetsHolder(bh);
     return true;
 }
+/**
+ * @brief Adds expense to primary budget
+ * @param params category[0], amount[1], comment[2]
+ * @return true operation successful
+ * @return false operation not successful
+ */
 bool Model::AddExpense(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
@@ -146,15 +230,18 @@ bool Model::AddExpense(const vector<string> & params){
         SignalIncorrectNumberOfParams();
         return false;
     }
+    string categoryName = params[0];
+    string amount = params[1];
     //searching for given category in primary budget
-    auto it = bh.primaryBudget.categories.find(params[0]);
+    auto it = bh.primaryBudget.categories.find(categoryName);
     if (it == bh.primaryBudget.categories.end()) {
-        cout << "Couldn't find category: " << params[0] << endl;
+        cout << "Couldn't find category: " << categoryName << endl;
         return false;
     }
     dataNS::Expense expense;
     try{
-        expense.amount = std::stod(params[1]);
+        // parsing expense amount
+        expense.amount = std::stod(amount);
     }
     catch(...){
         SignalIncorrectParamType();
@@ -168,6 +255,12 @@ bool Model::AddExpense(const vector<string> & params){
     SaveBudgetsHolder(bh);
     return true;
 }
+/**
+ * @brief Adds category to primary budget
+ * @param params category name[0], budgeted amount[1]
+ * @return true opetation successful
+ * @return false operation not successful
+ */
 bool Model::AddCategory(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
@@ -181,9 +274,11 @@ bool Model::AddCategory(const vector<string> & params){
     }
     //params parsing
     string name = params[0];
+    string amountToBudget = params[1];
+    //parsing string amount into double
     dataNS::Category category;
     try{
-        double budgeted = std::stod(params[1]);
+        double budgeted = std::stod(amountToBudget);
         category.budgeted = budgeted;
     }
     catch(...){
@@ -197,11 +292,16 @@ bool Model::AddCategory(const vector<string> & params){
         SignalUsedName();
         return false;
     }
-
     bh.primaryBudget.categories.insert(make_pair(name, category));
     SaveBudgetsHolder(bh);
     return true;
 }
+/**
+ * @brief Adds income to primary budget
+ * @param params amount[0], comment[1]
+ * @return true operation successful
+ * @return false operation not successful
+ */
 bool Model::AddIncome(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
@@ -229,42 +329,64 @@ bool Model::AddIncome(const vector<string> & params){
     SaveBudgetsHolder(bh);
     return true;
 }
+/**
+ * @brief Gets budget by name from budgets holder
+ * @param params budget name[0]
+ * @return dataNS::Budget requested budget
+ * @throws std::lenght_error When incorrect number of params is passed
+ * @throws std::invalid_argument when no primary budget is set or couldnt locate budget by name
+ */
 dataNS::Budget Model::GetBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
+    //check for primary budget
+    if(bh.primaryBudgetName == ""){
+        SignalNoPrimaryBudget();
+        throw std::invalid_argument("No primary budget set. ");
+    }
     if(params.size() == 0){
         //no arguments, print primary budget
         return bh.primaryBudget;
     }
     if(params.size() != 1){
         SignalIncorrectNumberOfParams();
-        //todo raise exception
+        throw std::length_error("Incorrect number of params. ");
     }
     string name = params[0];
     if(bh.primaryBudgetName == name){
+        // requested budget is primary budget
         return bh.primaryBudget;
     }
     //searching for given budget
     auto it = bh.otherBudgets.find(name);
     if (it == bh.otherBudgets.end()) {
         cout << "Couldnt locate given budget. " << endl;
-        //return false;
-        //todo exception
+        throw std::invalid_argument("Couldnt locate given budget. ");
     }
     return it->second;
 }
+/**
+ * @brief Gets category from primary budget
+ * @param params category name [0]
+ * @return dataNS::Category requested category
+ * @throws std::lenght_error When incorrect number of params is passed
+ * @throws std::invalid_argument when no primary budget is set or couldnt locate category by name
+ */
 dataNS::Category Model::GetCategory(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() != 1){
         SignalIncorrectNumberOfParams();
-        //todo raise exception
+        throw std::length_error("Incorrect number of params. ");
+    }
+    if(bh.primaryBudgetName == ""){
+        SignalNoPrimaryBudget();
+        throw std::invalid_argument("No primary budget set. ");
     }
     string name = params[0];
     //searching for given budget
     auto it = bh.primaryBudget.categories.find(name);
     if (it == bh.primaryBudget.categories.end()) {
         cout << "Couldnt locate given category. " << endl;
-        //return false;
-        //todo exception
+        throw std::invalid_argument("Couldnt locate given category. ");
     }
     return it->second;
 }

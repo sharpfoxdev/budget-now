@@ -67,7 +67,13 @@ void Controller::AddIncome(const vector<string> & params){
  * @param params Budget params
  */
 void Controller::PrintBudgetInfo(const vector<string> & params){
-    dataNS::Budget budget = model.GetBudget(params);
+    dataNS::Budget budget;
+    try{
+        budget = model.GetBudget(params);
+    }
+    catch(...){
+        return;
+    }
     view.PrintBudgetInfo(budget);
 }
 /**
@@ -75,6 +81,12 @@ void Controller::PrintBudgetInfo(const vector<string> & params){
  * @param params Category params
  */
 void Controller::PrintCategoryInfo(const vector<string> & params){
-    dataNS::Category category = model.GetCategory(params);
+    dataNS::Category category;
+    try{
+        category = model.GetCategory(params);
+    }
+    catch(...){
+        return;
+    }
     view.PrintCategoryInfo(category);
 }
