@@ -4,14 +4,16 @@ Usage
 list
     - lists all budgets
 
-add_budget <budget_name>
+add_budget <budget_name> <start_date dd/mm/yyyy> <end_date dd/mm/yyyy>
     - creates budget with given unique name
+    - sets the start and end date of the budget
 
 set_primary <budget_name>
     - sets given budget as primary
 
-copy_budget <new_budget_name> <old_budget_name>
+copy_budget <old_budget_name> <new_budget_name> <start_date dd/mm/yyyy> <end_date dd/mm/yyyy>
     - copies from old budget categories and their budgeted amounts
+    - sets the start and end date for the new budget
 
 add_category <category_name> <amount_to_budget>
     - creates category with given name and 
@@ -24,9 +26,9 @@ add_income <amount> <comment>
     primary budget
     - you can add non mandatory comment to the income
 
-expense <category> <amount> <comment>
-    - adds expense into given category in the primary budget
-    - comment is not mandatory
+expense <category> <amount> <comment> <date dd/mm/yyyy>
+    - adds expense into given category in the primary budget with given comment
+    - if date is not passed, todays date will be assumed
 
 info_budget <budget_name>
     - prints information about budget
