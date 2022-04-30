@@ -135,8 +135,8 @@ bool Model::CopyBudget(const vector<string> & params){
     dataNS::DateStruct endDateParsed;
     //parsing date
     try{
-        startDateParsed = dateManager.ParseDate(startDateString);
-        endDateParsed = dateManager.ParseDate(endDateString);
+        startDateParsed = DateManager::ParseDate(startDateString);
+        endDateParsed = DateManager::ParseDate(endDateString);
     }
     catch(...){
         SignalIncorrectParamType();
@@ -230,8 +230,8 @@ bool Model::AddBudget(const vector<string> & params){
     dataNS::DateStruct endDateParsed;
     //parsing date
     try{
-        startDateParsed = dateManager.ParseDate(startDateString);
-        endDateParsed = dateManager.ParseDate(endDateString);
+        startDateParsed = DateManager::ParseDate(startDateString);
+        endDateParsed = DateManager::ParseDate(endDateString);
     }
     catch(...){
         SignalIncorrectParamType();
@@ -252,7 +252,6 @@ bool Model::AddBudget(const vector<string> & params){
     dataNS::Budget budget;
     budget.start = startDateParsed;
     budget.end = endDateParsed;
-    cout << budget.start.day << " " << budget.start.month << " " << budget.start.year << endl;
     if(bh.primaryBudgetName == ""){
         //we have no budgets yet, this is the first one
         //so we set it as primary
@@ -302,10 +301,10 @@ bool Model::AddExpense(const vector<string> & params){
         SignalIncorrectParamType();
         return false;
     }
-
+    //parsing date
     if(params.size() >= 4){
         try{
-            dataNS::DateStruct dateParsed = dateManager.ParseDate(date);
+            dataNS::DateStruct dateParsed = DateManager::ParseDate(date);
             expense.date = dateParsed;
         }
         catch(...){
@@ -314,15 +313,15 @@ bool Model::AddExpense(const vector<string> & params){
         }
     }
     if(params.size() == 3){
-        expense.date = dateManager.GetTodaysDate();
+        expense.date = DateManager::GetTodaysDate();
     }
-    bool correctDate = dateManager.DateInBetweenOtherDates(bh.primaryBudget.start, expense.date, bh.primaryBudget.end);
+    bool correctDate = DateManager::DateInBetweenOtherDates(bh.primaryBudget.start, expense.date, bh.primaryBudget.end);
     if(!correctDate){
         cout << "Expense date not in the budget date range. " << endl;
         return false;
     }
     it->second.expenses.push_back(expense);
-    dateManager.SignalSpendingSpeed(bh.primaryBudget.start, bh.primaryBudget.end, expense.date, it->second);
+    DateManager::SignalSpendingSpeed(bh.primaryBudget.start, bh.primaryBudget.end, expense.date, it->second);
     SaveBudgetsHolder(bh);
     return true;
 }

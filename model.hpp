@@ -28,8 +28,6 @@ public:
     dataNS::Budget GetBudget(const vector<string> & params);
     dataNS::Category GetCategory(const vector<string> & params);
 private:
-    DateManager dateManager;
-    dataNS::BudgetsHolder allBudgets;
     void SaveBudgetsHolder(dataNS::BudgetsHolder bh);
     const string jsonFile = "budgetData.json";
     void SignalIncorrectNumberOfParams();

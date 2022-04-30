@@ -27,8 +27,8 @@ void View::PrintOperationResult( bool success){
  * @param budget Budget to display
  */
 void View::PrintBudgetInfo(dataNS::Budget budget){
-    cout << "Start: " << budget.start.day << "." << budget.start.month << "." << budget.start.year << endl;
-    cout << "End: " << budget.end.day << "." << budget.end.month << "." << budget.end.year << endl;
+    cout << "Start: " << budget.start.ToString() << endl;
+    cout << "End: " << budget.end.ToString() << endl;
     double totalIncome = 0;
     double totalExpenditure = 0;
     double totalBudgeted = 0;
@@ -46,6 +46,8 @@ void View::PrintBudgetInfo(dataNS::Budget budget){
         cout << "       Budgeted: " << myPair.second.budgeted << endl; 
         cout << "       Expense: " << expenseInCategory << endl;
         cout << "       Left to spend: " << myPair.second.budgeted - expenseInCategory << endl;
+        cout << "       Spent " << (100*expenseInCategory)/myPair.second.budgeted << " \% of budget" << endl;
+
 
     }
     for(const auto &income : budget.incomes) // access by reference to avoid copying
@@ -57,6 +59,9 @@ void View::PrintBudgetInfo(dataNS::Budget budget){
     cout << "Total expenditure: " << totalExpenditure << endl;
     cout << "Total budgeted: " << totalBudgeted << endl;
     cout << "Left to budget: " << totalIncome - totalBudgeted << endl;
+    if(totalIncome > 0){
+        cout << "Spent " << (100*totalExpenditure)/totalIncome << " \% of income. " << endl;
+    }
 }
 /**
  * @brief Prints detailed information about category end expenses within
@@ -66,13 +71,14 @@ void View::PrintCategoryInfo(dataNS::Category category){
     double expenseInCategory = 0;
     cout << "Expenses: " << endl;
     for(const auto & expense : category.expenses){
-        cout << expense.date.day << "." << expense.date.month << "." << expense.date.year;
+        cout << expense.date.ToString();
         cout << "   " << expense.amount << " " << expense.comment << endl;
         expenseInCategory += expense.amount;
     }
     cout << "Budgeted: " << category.budgeted << endl; 
     cout << "Expense: " << expenseInCategory << endl;
     cout << "Left to spend: " << category.budgeted - expenseInCategory << endl;
+    cout << "Spent " << (100*expenseInCategory)/category.budgeted << " \% of budget" << endl;
 }
 /**
  * @brief Prints list of all budgets with marker, which budget it the primary one

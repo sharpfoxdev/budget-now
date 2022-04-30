@@ -1,15 +1,8 @@
 #include <string>
 #include <vector>
-#include <iostream>
-#include <chrono>
 #include "commandLineParser.hpp"
-#include "date.h"
-#include <stdio.h>
-#include <time.h>
 
 using namespace std;
-using namespace date;
-using namespace std::chrono;
 
 /**
  * @brief 

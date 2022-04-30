@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iostream>
 #include "json.hpp"
 #include "date.h"
 
@@ -16,10 +18,19 @@ using namespace std;
  * in json.hpp library. 
  */
 namespace dataNS{
+    /**
+     * @brief Structure that holds dates (day, month, year)
+     */
     struct DateStruct{
         unsigned int day;
         unsigned int month;
         int year;
+        /**
+         * @brief Compare two dates
+         * @param other right operand
+         * @return true if left operand is less or equal to the right operand
+         * @return false otherwise
+         */
         bool operator<=(const DateStruct& other) const
         {
             auto ymdLeft = date::year{this->year}/this->month/this->day;
@@ -27,7 +38,18 @@ namespace dataNS{
             if(!ymdLeft.ok() || !ymdLeft.ok()){
                 throw std::invalid_argument("compare error");
             }
-            return (ymdLeft <= ymdRight); 
+            return ((ymdLeft < ymdRight) || (ymdLeft == ymdRight)); 
+        }
+        /**
+         * @brief Converts DateStruct to string, used for printing
+         * @return string of date in dd.mm.yyy format
+         */
+        string ToString() const{
+            stringstream strs;
+            strs << this->day << "." << this->month << "." << this->year;
+            string stri;
+            strs >> stri;
+            return stri;
         }
     };
     /**

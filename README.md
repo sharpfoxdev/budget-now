@@ -2,12 +2,12 @@
 
 Project for NPRG041 Programming in C++ at faculty of Mathematics and Physics of Charles university. 
 
-CLI budgeting application to track incomes and expenses.
+CLI budgeting application to track incomes and expenses within categories. 
 
 # Build instructions
 
 In the project folder, there is suplied CMakeLists.txt. To build the project simply run
-```cmake CMakeLists.txt``` and then ```make```, which should build all source code files into executable budgetApp, which you can then run. 
+```cmake CMakeLists.txt``` and then ```make```, which should build all source code files into executable budgetApp, which you can then run. I recommend using at least C++17 to build successfully. 
 
 # How to use
 
@@ -22,16 +22,16 @@ Life hack: if you don't want to type every command and want to use autocompletio
 First start with adding new budgets:
 
 ```
-./budgetApp add_budget jan22
-./budgetApp add_budget feb22
+./budgetApp add_budget april22 1.4.2022 30.04.2022
+./budgetApp add_budget may22 1.5.2022 31.05.2022
 ```
-This will create the two budgets with names `jan22` and `feb22` and the first one becomes primary budget. Note that the names has to be unique.  
+This will create the two budgets with names `april22` and `may22` and the first one becomes primary budget. Note that the names has to be unique. Start and end dates can be in both formats `dd.mm.yyyy` and `d.m.yyyy`. 
 
 ```
-./budgetApp set_primary feb22
+./budgetApp set_primary may22
 ```
 ### Changing primary budget
-If you want to change primary budget from `jan22` to `feb22`, run:
+If you want to change primary budget from `april22` to `may22`, run:
 
 ### Listing all budgets
 To list all available budgets, run:
@@ -54,19 +54,19 @@ To add category to the primary budget run:
 ./budgetApp add_category food 5000
 ./budgetApp add_category accomodation 6000
 ```
-This will create category `food` and budgest 5000 to it (amount we want to spend in this category). The name of category has to be unique within budget. 
+This will create category `food` and budget 5000 to it (amount we want to spend in this category). The name of category has to be unique within budget. 
 
 ### Adding expense to category
 To add expense in given category in primary budget run:
 ```
-./budgetApp expense food 200 tesco
+./budgetApp expense food 200 tesco 2.5.2022
 ```
-This will add expense of 200 in `food` category with comment `tesco`. If date is not specified, todays date will be assumed. 
+This will add expense of 200 in `food` category with comment `tesco`. If date is not specified, todays date will be assumed. But be aware, that the date has to be within budget date range. The app will also inform you, how fast or slow you are spending your budget. 
 
 ### Printing information about budget
 To print basic information and statistics about given budget, run:
 ```
-./budgetApp info_budget feb22
+./budgetApp info_budget may22
 ```
 This will print all the categories within budget, spent, budgeted and left to spend amounts within them and total income, expenses, budgeted and left to budget amounts within the whole budget. 
 
@@ -82,13 +82,13 @@ This will print information about category and all expenses within.
 ### Create copy of budget
 If you spend same amount of money every budget and don't want to create new budget and new categories every time, you can run 
 ```
-./budgetApp copy_budget feb22 march22
+./budgetApp copy_budget may22 june22 1.6.2022 30.6.2022
 ```
-This will create new budget march22 and copy all categories and budgeted amounts within them into the new budget. All you have to do now is switch primary budget from `feb22` to `march22`, add income and you are ready to add expenses when you need to. 
+This will create new budget june22 and copy all categories and budgeted amounts within them into the new budget. All you have to do now is switch primary budget from `may22` to `june22`, add income and you are ready to add expenses when you need to. 
 
 # Code architecture and design decisions
 
-The code architecture is based on Model-View-Controller design pattern with commandLineParser, that parses initial commands from CLI. 
+The code architecture is based on Model-View-Controller design pattern with commandLineParser, that parses initial commands from CLI and helper `DateManager` class, that handles dates. 
 
 Firstly the arguments are sent from main.cpp into `CommandLineParser`. It contains map between available commands and respective member functions, that can handle them. There we get only command parameters from args and these parameters then get passed further into `Controller` in appropriate member function, that further handles them. 
 
@@ -96,7 +96,7 @@ Lots of member functions in `CommandLineParser` are static yet they take an inst
 
 After arguments are parser into just command parameters, they are passed into appropriate function in `Controller`. Controller holds instances of `View` and `Model`. Firstly it calls `Model` to store/retrieve data and passes command arguments to it and then calls `View` to display results to the user on CLI. 
 
-`Model` is the core of the application as it handles logic of data, its storing and retrieving. It utilizes json.hpp https://github.com/nlohmann/json library and structures from `dataNS` namespace, that encapsulates structures `Expense`, `Income`, `Category`, `Budget` and `BudgetsHolder` as well as respective functions, to convert these structures to and from json. These functions get called by the json.hpp library and thats the reason, they have to be in a namespace together with the structures, otherwise there is a naming overlap. 
+`Model` is the core of the application as it handles logic of data, its storing and retrieving. It utilizes json.hpp https://github.com/nlohmann/json library and structures from `dataNS` namespace, that encapsulates structures `DateStruct`, `Expense`, `Income`, `Category`, `Budget` and `BudgetsHolder` as well as respective functions, to convert these structures to and from json. These functions get called by the json.hpp library and thats the reason, they have to be in a namespace together with the structures, otherwise there is a naming overlap. 
 
 `Budget` structure holds vector of `Incomes` (these are unnamed) and a map between name of category and `Category` object.
 
@@ -105,5 +105,9 @@ After arguments are parser into just command parameters, they are passed into ap
 `BudgetsHolder` holds map between names of budgets and respective `Budget` object. It also separately holds name and object of primary budget. That is because the aim of the application is to make the CLI commands as short as possible for the user (because who likes typing long commands), so the user sets one primary budget (for example a budget for a month) and then uses it without really switching to other budgets. So he sets up one primary budget, that is accessed a lot, so I wanted to make even the access on code level simple, so I took it out of the name-budget map in `BudgetsHolder` and gave it it's own variables. 
 
 So from the data structures, only `Budget` and `Category` can be accessed by names, that also act as keys, so they should be unique.  
+
+`Model` closely works with `DateManager`. This class handles anything that has to do with dates - parsing dates, getting current dates, more complex comparing. One of the functions also can take start and end of the budget, expense date and its category and compute how fast the user is spending their budget and advide them to slow down, if they spend too quickly. 
+
+`DateManager` works primarily with two types of objects: `DataStruct` from `dataNS` namespace, which is used for storing in json and passing around in the program, and year_month_day class from `date.h` library (https://github.com/HowardHinnant/date), which is used for computations over dates. `DateManager` can also freely tansfer between these types. 
 
 `View` then offers various member functions to display results on CLI from `Model` and it can print help text. 
