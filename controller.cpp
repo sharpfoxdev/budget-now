@@ -1,5 +1,147 @@
 #include "controller.hpp"
 
+unique_ptr<IView> BudgetController::HandleRequest(string command, const vector<string> & params){
+    auto it = actionMap.find(command);
+    if (it == actionMap.end()) {
+        //didnt find action
+        return make_unique<MessageView>("Budget controller doesn't know command: " + command);
+    }
+    else{
+        switch (it->second)
+        {
+            case Action::Add:
+            {
+                bool success = model.AddBudget(params);
+                return make_unique<OperationResultView>(success);
+                break;
+            }
+            case Action::Copy:
+            {
+                bool success = model.CopyBudget(params);
+                return make_unique<OperationResultView>(success);
+                break;
+            }
+            case Action::Info:
+            {
+                dataNS::Budget budget;
+                try{
+                    budget = model.GetBudget(params);
+                }
+                catch(...){
+                    return;
+                }
+                return make_unique<BudgetInfoView>(budget);
+                break;
+            }
+            case Action::List:
+            {
+                dataNS::BudgetsHolder budgets = model.GetBudgetsHolder();
+                return make_unique<BudgetsListView>(budgets);
+                break;
+            }
+            case Action::SetPrimary:
+            {
+                bool success = model.SetPrimaryBudget(params);
+                return make_unique<OperationResultView>(success);
+                break;
+            }
+            default:
+            {
+                return make_unique<MessageView>("How the hell did you get here. ");
+                break;
+            }
+        }
+    }
+}
+
+unique_ptr<IView> CategoryController::HandleRequest(string command, const vector<string> & params){
+    auto it = actionMap.find(command);
+    if (it == actionMap.end()) {
+        //didnt find action
+        return make_unique<MessageView>("Category controller doesn't know command: " + command);
+    }
+    else{
+        switch (it->second)
+        {
+            case Action::Add:
+            {
+                bool success = model.AddCategory(params);
+                return make_unique<OperationResultView>(success);
+                break;
+            }
+            case Action::Info:
+            {
+                dataNS::Category category;
+                try{
+                    category = model.GetCategory(params);
+                }
+                catch(...){
+                    return;
+                }
+                return make_unique<CategoryInfoView>(category);
+                break;
+            }
+            default:
+            {
+                return make_unique<MessageView>("How the hell did you get here. ");
+                break;
+            }
+        }
+    }
+}
+
+unique_ptr<IView> IncomeController::HandleRequest(string command, const vector<string> & params){
+    auto it = actionMap.find(command);
+    if (it == actionMap.end()) {
+        //didnt find action
+        return make_unique<MessageView>("Income controller doesn't know command: " + command);
+    }
+    else{
+        switch (it->second)
+        {
+            case Action::Add:
+            {
+                bool success = model.AddIncome(params);
+                return make_unique<OperationResultView>(success);
+                break;
+            }
+            default:
+            {
+                return make_unique<MessageView>("How the hell did you get here. ");
+                break;
+            }
+        }
+    }
+}
+
+unique_ptr<IView> ExpenseController::HandleRequest(string command, const vector<string> & params){
+    auto it = actionMap.find(command);
+    if (it == actionMap.end()) {
+        //didnt find action
+        return make_unique<MessageView>("Expense controller doesn't know command: " + command);
+    }
+    else{
+        switch (it->second)
+        {
+            case Action::Add:
+            {
+                bool success = model.AddExpense(params);
+                return make_unique<OperationResultView>(success);
+                break;
+            }
+            default:
+            {
+                return make_unique<MessageView>("How the hell did you get here. ");
+                break;
+            }
+        }
+    }
+}
+unique_ptr<IView> HelpController::HandleRequest(string command, const vector<string> & params){
+    ifstream f("howToUse.txt");
+    return make_unique<HelpView>(f);
+}
+
 /**
  * @brief Calls view to print help text to CLI
  */
