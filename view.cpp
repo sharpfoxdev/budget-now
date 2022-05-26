@@ -9,7 +9,12 @@ void View::PrintHelp(){
     if (f.is_open()){
         std::cout << f.rdbuf();
     }
+    f.close();
 }
+/*void HelpView::RenderTo(ostream & stream){
+    stream << helpSourceStream.rdbuf();
+}*/
+
 /**
  * @brief Prints to std:out, whether the operation was successful or not
  * @param success true if operation was successful, false if not
