@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "json.hpp"
 #include "date.h"
 #include "dateManager.hpp"
@@ -18,6 +19,7 @@ using namespace date;
 
 class Model{
 public:
+    Model(string jsonFile) : jsonFile(jsonFile) {}
     dataNS::BudgetsHolder GetBudgetsHolder();
     bool CopyBudget(const vector<string> & params);
     bool SetPrimaryBudget(const vector<string> & params);
@@ -27,13 +29,15 @@ public:
     bool AddIncome(const vector<string> & params);
     dataNS::Budget GetBudget(const vector<string> & params);
     dataNS::Category GetCategory(const vector<string> & params);
+    string GetMessage();
 private:
+    stringstream message;
     void SaveBudgetsHolder(dataNS::BudgetsHolder bh);
-    const string jsonFile = "budgetData.json";
-    void SignalIncorrectNumberOfParams();
-    void SignalIncorrectParamType();
-    void SignalUsedName();
-    void SignalNoPrimaryBudget();
+    string jsonFile;
+    void MessageIncorrectNumberOfParams();
+    void MessageIncorrectParamType();
+    void MessageUsedName();
+    void MessageNoPrimaryBudget();
 };
 
 #endif
