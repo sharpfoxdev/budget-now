@@ -1,0 +1,8 @@
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Now simply link against gtest or gtest_main as needed. Eg
+add_executable(testmodel model_test.cpp ../model.hpp)
+
+include_directories(..)
+
+target_link_libraries(testmodel gtest_main)

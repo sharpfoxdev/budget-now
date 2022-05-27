@@ -38,3 +38,4 @@ Makefile
 CMakeFiles
 build
 .vscode
+_deps
