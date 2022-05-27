@@ -40,7 +40,7 @@ int main(int argc, char * argv[]) {
     vector<string> args (argv + 1, argv + argc);
     MasterController masterContr(commandControllerMap);
     unique_ptr<IView> resultView = masterContr.ExecuteRequest(args);
-    //resultView.get()->RenderTo(cout);
+    resultView.get()->RenderTo(cout);
     /*
     std::unique_ptr<IView> ptr = std::make_unique<HelpView>(f);
     ptr.get()->RenderTo(std::cout);

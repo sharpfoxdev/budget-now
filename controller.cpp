@@ -14,8 +14,9 @@ unique_ptr<IView> MasterController::ExecuteRequest(vector<string> & args){
     }
     else{
         shared_ptr<IController> controller = it->second;
+        string command = args[0];
         args.erase(args.begin());
-        return controller.get()->HandleRequest(args[0], args);
+        return controller.get()->HandleRequest(command, args);
     }
 }
 unique_ptr<IView> BudgetController::HandleRequest(string command, const vector<string> & params){
