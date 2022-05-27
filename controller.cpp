@@ -3,9 +3,14 @@
 
 unique_ptr<IView> MasterController::ExecuteRequest(vector<string> & args){
     if(args.size() < 1){
-        cout << "inside";
+        //cout << "Execute req" << endl;
+        //string str("Too few arguments, use --help to see available commands. ");
+        //string second("Second string");
         unique_ptr<IView> ptr = make_unique<MessageView>("Too few arguments, use --help to see available commands. ", "");
-        ptr.get()->RenderTo(cout);
+        //unique_ptr<IView> ptr = make_unique<MessageView>(str, second);
+        //ptr.get()->RenderTo(cout);
+        //cout << "Finished exec req" << endl; 
+        cout.flush();
         return ptr;
     }
     auto it = commandControllerMap.find(args[0]);

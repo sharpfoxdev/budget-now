@@ -17,8 +17,8 @@ using namespace std;
  * @return int 
  */
 int main(int argc, char * argv[]) {
-    cout << "here";
-    Model model("budgetData1.json");
+    //cout << "here";
+    Model model("budgetData2.json");
     shared_ptr<IController> budgetContr = make_shared<BudgetController>(model);
     shared_ptr<IController> incomeContr = make_shared<IncomeController>(model);
     shared_ptr<IController> categoryContr = make_shared<CategoryController>(model);
@@ -38,6 +38,7 @@ int main(int argc, char * argv[]) {
         { "--help", helpContr}
     };
     vector<string> args (argv + 1, argv + argc);
+    //vector<string> args{"--help"};
     MasterController masterContr(commandControllerMap);
     unique_ptr<IView> resultView = masterContr.ExecuteRequest(args);
     resultView.get()->RenderTo(cout);

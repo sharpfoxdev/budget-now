@@ -11,6 +11,13 @@ using namespace std;
 
 class IView{
 public: 
+    IView() = default;
+	IView(const IView &base) = default;
+	IView(IView &&base) = default;
+
+	IView &operator =(const IView &base) = default;
+	IView &operator =(IView &&base) = default;
+
 	virtual ~IView() = default;
     virtual void RenderTo(ostream & stream) = 0;
 };
@@ -25,9 +32,9 @@ class BudgetsListView final : public IView
 {
 private:
     dataNS::BudgetsHolder budgets;
-    const string & modelMessage;
+    string modelMessage;
 public:
-    BudgetsListView(dataNS::BudgetsHolder budgets, const string & modelMessage) : budgets(budgets), modelMessage(modelMessage){}
+    BudgetsListView(dataNS::BudgetsHolder budgets, string modelMessage) : budgets(budgets), modelMessage(modelMessage){}
     virtual void RenderTo(ostream & stream) override;
 };
 
@@ -35,9 +42,9 @@ class OperationResultView final : public IView
 {
 private:
     bool success;
-    const string & modelMessage;
+    string modelMessage;
 public:
-    OperationResultView(bool success, const string & modelMessage) : success(success), modelMessage(modelMessage){}
+    OperationResultView(bool success, string modelMessage) : success(success), modelMessage(modelMessage){}
     virtual void RenderTo(ostream & stream) override;
 };
 
@@ -45,9 +52,9 @@ class BudgetInfoView final : public IView
 {
 private:
     dataNS::Budget budget;
-    const string & modelMessage;
+    string modelMessage;
 public:
-    BudgetInfoView(dataNS::Budget budget, const string & modelMessage) : budget(budget), modelMessage(modelMessage){}
+    BudgetInfoView(dataNS::Budget budget, string modelMessage) : budget(budget), modelMessage(modelMessage){}
     virtual void RenderTo(ostream & stream) override;
 };
 
@@ -55,23 +62,23 @@ class CategoryInfoView final : public IView
 {
 private:
     dataNS::Category category;
-    const string & modelMessage;
+    string modelMessage;
 public:
-    CategoryInfoView(dataNS::Category category, const string & modelMessage) : category(category), modelMessage(modelMessage){}
+    CategoryInfoView(dataNS::Category category, string modelMessage) : category(category), modelMessage(modelMessage){}
     virtual void RenderTo(ostream & stream) override;
 };
 
 class MessageView final : public IView 
 {
 private:
-    const string & message;
-    const string & modelMessage;
+    string message;
+    string modelMessage;
 public:
-    MessageView(const string & message, const string & modelMessage) : message(message), modelMessage(modelMessage) {
-        cout << "start const";
-        cout << message << endl;
-        cout << modelMessage << endl;
-        cout << "end const";
+    MessageView(string message, string modelMessage) : message(message), modelMessage(modelMessage) {
+        //cout << "start const";
+        //cout << message << endl;
+        //cout << modelMessage << endl;
+        //cout << "end const";
     }
     virtual void RenderTo(ostream & stream) override;
 };

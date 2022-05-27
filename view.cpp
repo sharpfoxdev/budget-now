@@ -16,13 +16,17 @@ void HelpView::RenderTo(ostream & stream){
     if(f.is_open()){
         stream << f.rdbuf();
     }
+    stream.flush();
     f.close();
 }
 
 void MessageView::RenderTo(ostream & stream){
-    cout << "inside render to";
-    cout << modelMessage;
-    cout << message;
+    //cout << "RenderTo" << endl;
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
+    stream << message << endl;
+    cout.flush();
 }
 
 /**
@@ -30,6 +34,7 @@ void MessageView::RenderTo(ostream & stream){
  * @param success true if operation was successful, false if not
  */
 void View::PrintOperationResult( bool success){
+    
     if(success){
         cout << "Operation Successful. " << endl;
     }
@@ -38,7 +43,9 @@ void View::PrintOperationResult( bool success){
     }
 }
 void OperationResultView::RenderTo(ostream & stream){
-    stream << modelMessage;
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
     if(success){
         stream << "Operation Successful. " << endl;
     }
@@ -86,7 +93,9 @@ void View::PrintBudgetInfo(dataNS::Budget budget){
     }
 }
 void BudgetInfoView::RenderTo(ostream & stream){
-    stream << modelMessage;
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
     stream << "Start: " << budget.start.ToString() << endl;
     stream << "End: " << budget.end.ToString() << endl;
     double totalIncome = 0;
@@ -139,6 +148,9 @@ void View::PrintCategoryInfo(dataNS::Category category){
     cout << "Spent " << (100*expenseInCategory)/category.budgeted << " \% of budget" << endl;
 }
 void CategoryInfoView::RenderTo(ostream & stream){
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
     stream << modelMessage;
     double expenseInCategory = 0;
     stream << "Expenses: " << endl;
@@ -168,7 +180,9 @@ void View::PrintBudgetsList(dataNS::BudgetsHolder budgets){
     }
 }
 void BudgetsListView::RenderTo(ostream & stream){
-    stream << modelMessage;
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
     if(budgets.primaryBudgetName == "" && budgets.otherBudgets.size() == 0){
         stream << "No budgets were added yet. Use add_budget <budget_name>. " << endl;
     }
