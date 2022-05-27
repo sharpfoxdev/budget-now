@@ -170,7 +170,7 @@ unique_ptr<IView> ExpenseController::HandleRequest(string command, const vector<
     }
 }
 unique_ptr<IView> HelpController::HandleRequest(string command, const vector<string> & params){
-    return make_unique<HelpView>();
+    return make_unique<HelpView>("howToUse.txt");
 }
 
 // /**

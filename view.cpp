@@ -12,7 +12,7 @@ void View::PrintHelp(){
     f.close();
 }
 void HelpView::RenderTo(ostream & stream){
-    ifstream f("howToUse.txt");
+    ifstream f(pathHelpFile);
     if(f.is_open()){
         stream << f.rdbuf();
     }
@@ -21,7 +21,6 @@ void HelpView::RenderTo(ostream & stream){
 }
 
 void MessageView::RenderTo(ostream & stream){
-    //cout << "RenderTo" << endl;
     if(modelMessage != ""){
         stream << modelMessage << endl;
     }

@@ -24,7 +24,10 @@ public:
 
 class HelpView final : public IView 
 {
+private:
+    string pathHelpFile;
 public:
+    HelpView(string pathHelpFile) : pathHelpFile(pathHelpFile) {}
     virtual void RenderTo(ostream & stream) override;
 };
 
@@ -74,12 +77,7 @@ private:
     string message;
     string modelMessage;
 public:
-    MessageView(string message, string modelMessage) : message(message), modelMessage(modelMessage) {
-        //cout << "start const";
-        //cout << message << endl;
-        //cout << modelMessage << endl;
-        //cout << "end const";
-    }
+    MessageView(string message, string modelMessage) : message(message), modelMessage(modelMessage) {}
     virtual void RenderTo(ostream & stream) override;
 };
 
