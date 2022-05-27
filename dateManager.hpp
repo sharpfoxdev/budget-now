@@ -14,7 +14,7 @@ using namespace date;
 
 class DateManager{
 public:
-    static void SignalSpendingSpeed(const dataNS::DateStruct & startDate, const dataNS::DateStruct & endDate, const dataNS::DateStruct & expenseDate, const dataNS::Category & category);
+    static string GetSpendingSpeedString(const dataNS::DateStruct & startDate, const dataNS::DateStruct & endDate, const dataNS::DateStruct & expenseDate, const dataNS::Category & category);
     static dataNS::DateStruct ParseDate(const string & date);
     static dataNS::DateStruct GetTodaysDate();
     static bool DateInBetweenOtherDates(const dataNS::DateStruct & firstDate, const dataNS::DateStruct & inBetweenDate, const dataNS::DateStruct & lastDate);

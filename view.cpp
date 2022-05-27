@@ -12,11 +12,17 @@ void View::PrintHelp(){
     f.close();
 }
 void HelpView::RenderTo(ostream & stream){
-    stream << helpSourceStream.rdbuf();
+    ifstream f("howToUse.txt");
+    if(f.is_open()){
+        stream << f.rdbuf();
+    }
+    f.close();
 }
 
 void MessageView::RenderTo(ostream & stream){
-    stream << message;
+    cout << "inside render to";
+    cout << modelMessage;
+    cout << message;
 }
 
 /**
@@ -32,6 +38,7 @@ void View::PrintOperationResult( bool success){
     }
 }
 void OperationResultView::RenderTo(ostream & stream){
+    stream << modelMessage;
     if(success){
         stream << "Operation Successful. " << endl;
     }
@@ -79,6 +86,7 @@ void View::PrintBudgetInfo(dataNS::Budget budget){
     }
 }
 void BudgetInfoView::RenderTo(ostream & stream){
+    stream << modelMessage;
     stream << "Start: " << budget.start.ToString() << endl;
     stream << "End: " << budget.end.ToString() << endl;
     double totalIncome = 0;
@@ -131,6 +139,7 @@ void View::PrintCategoryInfo(dataNS::Category category){
     cout << "Spent " << (100*expenseInCategory)/category.budgeted << " \% of budget" << endl;
 }
 void CategoryInfoView::RenderTo(ostream & stream){
+    stream << modelMessage;
     double expenseInCategory = 0;
     stream << "Expenses: " << endl;
     for(const auto & expense : category.expenses){
@@ -159,6 +168,7 @@ void View::PrintBudgetsList(dataNS::BudgetsHolder budgets){
     }
 }
 void BudgetsListView::RenderTo(ostream & stream){
+    stream << modelMessage;
     if(budgets.primaryBudgetName == "" && budgets.otherBudgets.size() == 0){
         stream << "No budgets were added yet. Use add_budget <budget_name>. " << endl;
     }

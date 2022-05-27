@@ -1,7 +1,9 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 #include "commandLineParser.hpp"
+#include "controller.hpp"
 
 #include "view.hpp"
 
@@ -15,15 +17,39 @@ using namespace std;
  * @return int 
  */
 int main(int argc, char * argv[]) {
-    std::ifstream f("howToUse.txt");
+    cout << "here";
+    Model model("budgetData1.json");
+    shared_ptr<IController> budgetContr = make_shared<BudgetController>(model);
+    shared_ptr<IController> incomeContr = make_shared<IncomeController>(model);
+    shared_ptr<IController> categoryContr = make_shared<CategoryController>(model);
+    shared_ptr<IController> expenseContr = make_shared<ExpenseController>(model);
+    shared_ptr<IController> helpContr = make_shared<HelpController>(model);
+
+    map<string, shared_ptr<IController>> commandControllerMap = {
+        { "expense", expenseContr},
+        { "set_primary", budgetContr},
+        { "add_budget", budgetContr},
+        { "add_category", categoryContr}, 
+        { "add_income", incomeContr}, 
+        { "copy_budget", budgetContr}, 
+        { "list", budgetContr}, 
+        { "info_budget", budgetContr}, 
+        { "info_category", categoryContr}, 
+        { "--help", helpContr}
+    };
+    vector<string> args (argv + 1, argv + argc);
+    MasterController masterContr(commandControllerMap);
+    unique_ptr<IView> resultView = masterContr.ExecuteRequest(args);
+    //resultView.get()->RenderTo(cout);
+    /*
     std::unique_ptr<IView> ptr = std::make_unique<HelpView>(f);
     ptr.get()->RenderTo(std::cout);
     std::stringstream sstream;
     ptr.get()->RenderTo(sstream);
     std::cout<<sstream.str();
-    f.close();
+    f.close();*/
 	return 0;
-    /*vector<string> args (argv + 1, argv + argc);
+    /*
     CommandLineParser parser(args);
     parser.ParseArgs();
     return 0;*/

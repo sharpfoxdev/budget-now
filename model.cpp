@@ -61,6 +61,10 @@ namespace dataNS{
     }
 
 }
+
+string Model::GetMessage(){
+    return message.str();
+}
 /**
  * @brief Signals to the user incorrect number of command
  * parameters were used. 
@@ -321,7 +325,7 @@ bool Model::AddExpense(const vector<string> & params){
         return false;
     }
     it->second.expenses.push_back(expense);
-    DateManager::SignalSpendingSpeed(bh.primaryBudget.start, bh.primaryBudget.end, expense.date, it->second);
+    message << DateManager::GetSpendingSpeedString(bh.primaryBudget.start, bh.primaryBudget.end, expense.date, it->second);
     SaveBudgetsHolder(bh);
     return true;
 }

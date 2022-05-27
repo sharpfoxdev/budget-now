@@ -11,6 +11,8 @@
 
 using namespace std;
 
+
+
 class IController{
 public: 
 	virtual ~IController() = default;
@@ -97,6 +99,13 @@ public:
     virtual unique_ptr<IView> HandleRequest(string command, const vector<string> & params) override;
 };
 
+class MasterController{
+private:
+    map<string, shared_ptr<IController>> & commandControllerMap;
+public:
+    MasterController(map<string, shared_ptr<IController>> & commandControllerMap) : commandControllerMap(commandControllerMap){}
+    unique_ptr<IView> ExecuteRequest(vector<string> & args);
+};
 /**
  * @brief Calls Model to get/set data and then calls View to show them to the user on CLI
  */
