@@ -36,3 +36,5 @@ budgetApp
 CMakeCache.txt
 Makefile
 CMakeFiles
+build
+.vscode
