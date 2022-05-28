@@ -12,6 +12,9 @@ using namespace std::chrono;
 using namespace std;
 using namespace date;
 
+/**
+ * @brief Manages date validation and parsing
+ */
 class DateManager{
 public:
     static string GetSpendingSpeedString(const dataNS::DateStruct & startDate, const dataNS::DateStruct & endDate, const dataNS::DateStruct & expenseDate, const dataNS::Category & category);

@@ -17,6 +17,9 @@ using namespace std;
 using namespace std::chrono;
 using namespace date;
 
+/**
+ * @brief Interface for model, that can save and retrieve data from storage
+ */
 class IModel{
 public: 
     virtual ~IModel() = default;
@@ -33,6 +36,9 @@ public:
 
 };
 
+/**
+ * @brief Implementation of IModel interface, uses .json to store and retrieve data
+ */
 class Model final : public IModel{
 public:
     Model(string jsonFile) : jsonFile(jsonFile) {}

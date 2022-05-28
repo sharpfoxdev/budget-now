@@ -3,20 +3,22 @@
 #include <memory>
 #include <map>
 #include "controller.hpp"
-
 #include "view.hpp"
 
 using namespace std;
 
 /**
  * @brief 
- * Entry point of the program, passes CLI args into CommandLineParser. 
+ * Entry point of the program, passes CLI args into MasterController 
  * @param argc Number of arguments
  * @param argv CLI arguments
  * @return int 
  */
 int main(int argc, char * argv[]) {
+    vector<string> args (argv + 1, argv + argc);
+
     shared_ptr<IModel> model = make_shared<Model>("budgetResult.json");
+
     shared_ptr<IController> budgetContr = make_shared<BudgetController>(model);
     shared_ptr<IController> incomeContr = make_shared<IncomeController>(model);
     shared_ptr<IController> categoryContr = make_shared<CategoryController>(model);
@@ -35,9 +37,8 @@ int main(int argc, char * argv[]) {
         { "info_category", categoryContr}, 
         { "--help", helpContr}
     };
-    vector<string> args (argv + 1, argv + argc);
-    MasterController masterContr(commandControllerMap);
-    unique_ptr<IView> resultView = masterContr.ExecuteRequest(args);
+    MasterController masterController(commandControllerMap);
+    unique_ptr<IView> resultView = masterController.ExecuteRequest(args);
     resultView.get()->RenderTo(cout);
 	return 0;
 }
