@@ -5,17 +5,12 @@
 #include "dataClasses.hpp"
 #include "view.hpp"
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <filesystem>
-#include <stdio.h>
 #include <vector>
 #include <memory>
-#include <sstream>
 
 using namespace std;
-using ::testing::AtLeast; 
-
+using ::testing::AtLeast;
+using ::testing::InSequence;
 
 class MockSubController : public IController {
     public:
@@ -51,60 +46,62 @@ TEST(CallingSubController, MasterControllerWorks) {
     masterContr.ExecuteRequest(args); 
 }
 TEST(CallingModel, BudgetControllerWorks) {
-    shared_ptr<MockModel> mockModel1 = make_shared<MockModel>();
-    shared_ptr<MockModel> mockModel2 = make_shared<MockModel>();
-    shared_ptr<MockModel> mockModel3 = make_shared<MockModel>();
+    shared_ptr<MockModel> mockModel = make_shared<MockModel>();
+    unique_ptr<IController> controller = make_unique<BudgetController>(mockModel);
 
-    shared_ptr<IController> controller = it->second;
-    string command = args[0];
-    args.erase(args.begin());
-    return controller.get()->HandleRequest(command, args);
+    {
+        //we expect that methods on mockModel will be called in this order
+        InSequence s;
+        EXPECT_CALL(*mockModel, GetBudgetsHolder());
+        EXPECT_CALL(*mockModel, AddBudget(vector<string>{"param1", "param2"}));
+        EXPECT_CALL(*mockModel, CopyBudget(vector<string>{"param1", "param2"}));
+        EXPECT_CALL(*mockModel, SetPrimaryBudget(vector<string>{"param1", "param2"}));
+        EXPECT_CALL(*mockModel, GetBudget(vector<string>{"param1", "param2"}));
+    }
+    EXPECT_CALL(*mockModel, GetMessage()).Times(AtLeast(1));
+    controller.get()->HandleRequest("list", vector<string>{"param1", "param2"});
+    controller.get()->HandleRequest("add_budget", vector<string>{"param1", "param2"});
+    controller.get()->HandleRequest("copy_budget", vector<string>{"param1", "param2"});
+    controller.get()->HandleRequest("set_primary", vector<string>{"param1", "param2"});
+    controller.get()->HandleRequest("info_budget", vector<string>{"param1", "param2"});
 }
 
 TEST(CallingModel, ExpenseControllerWorks) {
-    shared_ptr<MockSubController> mockSubController = make_shared<MockSubController>();
-    map<string, shared_ptr<IController>> commandControllerMap = {
-        { "test_command", mockSubController},
-    };
-    vector<string> args{"test_command", "param1", "param2"};
-
-    vector<string> expectedParams{"param1", "param2"};
-    EXPECT_CALL(*mockSubController, HandleRequest("test_command", expectedParams));
-
-    MasterController masterContr(commandControllerMap);
-    //this should call HandleRequest on mockSubController
-    masterContr.ExecuteRequest(args); 
+    shared_ptr<MockModel> mockModel = make_shared<MockModel>();
+    unique_ptr<IController> controller = make_unique<ExpenseController>(mockModel);
+    {
+        //we expect that methods on mockModel will be called in this order
+        InSequence s;
+        EXPECT_CALL(*mockModel, AddExpense(vector<string>{"param1", "param2"}));
+    }
+    EXPECT_CALL(*mockModel, GetMessage()).Times(AtLeast(1));;
+    controller.get()->HandleRequest("expense", vector<string>{"param1", "param2"});
 }
 TEST(CallingModel, CategoryControllerWorks) {
-    shared_ptr<MockSubController> mockSubController = make_shared<MockSubController>();
-    map<string, shared_ptr<IController>> commandControllerMap = {
-        { "test_command", mockSubController},
-    };
-    vector<string> args{"test_command", "param1", "param2"};
-
-    vector<string> expectedParams{"param1", "param2"};
-    EXPECT_CALL(*mockSubController, HandleRequest("test_command", expectedParams));
-
-    MasterController masterContr(commandControllerMap);
-    //this should call HandleRequest on mockSubController
-    masterContr.ExecuteRequest(args); 
+    shared_ptr<MockModel> mockModel = make_shared<MockModel>();
+    unique_ptr<IController> controller = make_unique<CategoryController>(mockModel);
+    {
+        //we expect that methods on mockModel will be called in this order
+        InSequence s;
+        EXPECT_CALL(*mockModel, GetCategory(vector<string>{"param1", "param2"}));
+        EXPECT_CALL(*mockModel, AddCategory(vector<string>{"param1", "param2"}));
+    }
+    EXPECT_CALL(*mockModel, GetMessage()).Times(AtLeast(1));;
+    controller.get()->HandleRequest("info_category", vector<string>{"param1", "param2"});
+    controller.get()->HandleRequest("add_category", vector<string>{"param1", "param2"});
 }
 
 TEST(CallingModel, IncomeControllerWorks) {
-    shared_ptr<MockSubController> mockSubController = make_shared<MockSubController>();
-    map<string, shared_ptr<IController>> commandControllerMap = {
-        { "test_command", mockSubController},
-    };
-    vector<string> args{"test_command", "param1", "param2"};
-
-    vector<string> expectedParams{"param1", "param2"};
-    EXPECT_CALL(*mockSubController, HandleRequest("test_command", expectedParams));
-
-    MasterController masterContr(commandControllerMap);
-    //this should call HandleRequest on mockSubController
-    masterContr.ExecuteRequest(args); 
+    shared_ptr<MockModel> mockModel = make_shared<MockModel>();
+    unique_ptr<IController> controller = make_unique<IncomeController>(mockModel);
+    {
+        //we expect that methods on mockModel will be called in this order
+        InSequence s;
+        EXPECT_CALL(*mockModel, AddIncome(vector<string>{"param1", "param2"}));
+    }
+    EXPECT_CALL(*mockModel, GetMessage()).Times(AtLeast(1));;
+    controller.get()->HandleRequest("add_income", vector<string>{"param1", "param2"});
 }
-
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
