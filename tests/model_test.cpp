@@ -41,38 +41,26 @@ protected:
     }
 private:
     const string sourceTestJson = "source_test.json";
-    const string sourceEmptyJson = "source_empty.json";
 };
 
 TEST_F(ModelTest, CopyBudgetWorks) {
-    shared_ptr<IModel> model = make_shared<Model>(ModelTest::testJson);
+    unique_ptr<IModel> model = make_unique<Model>(ModelTest::testJson);
     EXPECT_FALSE(model.get()->CopyBudget(vector<string>{"NotEnoughParams"}));
     EXPECT_FALSE(model.get()->CopyBudget(vector<string>{"Param1", "Param2", "NotADate", "NotADate"}));
     //june is already used
     EXPECT_FALSE(model.get()->CopyBudget(vector<string>{"may22", "june22", "1.6.2022", "30.6.2022"}));
     EXPECT_TRUE(model.get()->CopyBudget(vector<string>{"may22", "july22", "1.6.2022", "30.6.2022"}));
     compareTwoFiles(ModelTest::testJson, "expected_copy_budget.json");
-    /*ifstream f(ModelTest::emptyJson);
-    stringstream ss;
-    if (f.is_open()){
-        ss << f.rdbuf();
-    }
-    string s = ss.str();
-    EXPECT_EQ(s, "hello");
-    f.close();
-    ofstream fi(ModelTest::emptyJson);
-    fi << "jop";
-    fi.close();*/  
 }
 
 TEST_F(ModelTest, SetPrimaryBudgetWorks) {
-    shared_ptr<IModel> model = make_shared<Model>(ModelTest::testJson);
+    unique_ptr<IModel> model = make_unique<Model>(ModelTest::testJson);
     EXPECT_FALSE(model.get()->SetPrimaryBudget(vector<string>{"NotBudgetName"}));
     EXPECT_TRUE(model.get()->SetPrimaryBudget(vector<string>{"april22"}));
     compareTwoFiles(ModelTest::testJson, "expected_set_primary.json");
 }
 TEST_F(ModelTest, AddBudgetWorks) {
-    shared_ptr<IModel> model = make_shared<Model>(ModelTest::testJson);
+    unique_ptr<IModel> model = make_unique<Model>(ModelTest::testJson);
     EXPECT_FALSE(model.get()->AddBudget(vector<string>{"NotEnoughParams"}));
     EXPECT_FALSE(model.get()->AddBudget(vector<string>{"Param1", "NotADate", "NotADate"}));
     //june is already used
@@ -81,7 +69,7 @@ TEST_F(ModelTest, AddBudgetWorks) {
     compareTwoFiles(ModelTest::testJson, "expected_add_budget.json");
 }
 TEST_F(ModelTest, AddExpenseWorks) {
-    shared_ptr<IModel> model = make_shared<Model>(ModelTest::testJson);
+    unique_ptr<IModel> model = make_unique<Model>(ModelTest::testJson);
     EXPECT_FALSE(model.get()->AddExpense(vector<string>{"NotEnoughParams"}));
     //not number passed as amount
     EXPECT_FALSE(model.get()->AddExpense(vector<string>{"food", "notNumber", "comment", "15.5.2022"}));
@@ -93,7 +81,7 @@ TEST_F(ModelTest, AddExpenseWorks) {
     compareTwoFiles(ModelTest::testJson, "expected_add_expense.json");
 }
 TEST_F(ModelTest, AddCategoryWorks) {
-    shared_ptr<IModel> model = make_shared<Model>(ModelTest::testJson);
+    unique_ptr<IModel> model = make_unique<Model>(ModelTest::testJson);
     EXPECT_FALSE(model.get()->AddCategory(vector<string>{"NotEnoughParams"}));
     //not number passed as amount
     EXPECT_FALSE(model.get()->AddCategory(vector<string>{"travel", "notNumber"}));
@@ -103,7 +91,7 @@ TEST_F(ModelTest, AddCategoryWorks) {
     compareTwoFiles(ModelTest::testJson, "expected_add_category.json");
 }
 TEST_F(ModelTest, AddIncomeWorks) {
-    shared_ptr<IModel> model = make_shared<Model>(ModelTest::testJson);
+    unique_ptr<IModel> model = make_unique<Model>(ModelTest::testJson);
     //not enough params
     EXPECT_FALSE(model.get()->AddIncome(vector<string>{}));
     //not number passed as amount
