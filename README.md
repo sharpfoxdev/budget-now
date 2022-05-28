@@ -9,6 +9,15 @@ CLI budgeting application to track incomes and expenses within categories.
 In the project folder, there is suplied CMakeLists.txt. To build the project simply run
 ```cmake CMakeLists.txt``` and then ```make```, which should build all source code files into executable budgetApp, which you can then run. I recommend using at least C++17 to build successfully. 
 
+## Tests
+To run tests build the project (see above) and then use following commands. 
+```
+cd tests
+./testmodel 
+./testcontroller
+./testview
+```
+
 # How to use
 
 The program offers several commands, that can also be found in ```howToUse.txt``` file, further description is bellow in Examples. You can also get a list of available commands by running ```./budgetApp --help```. 
@@ -88,14 +97,12 @@ This will create new budget june22 and copy all categories and budgeted amounts 
 
 # Code architecture and design decisions
 
-The code architecture is based on Model-View-Controller design pattern with commandLineParser, that parses initial commands from CLI and helper `DateManager` class, that handles dates. 
+The code architecture is based on Model-View-Controller design pattern with helper `DateManager` class, that handles dates. 
 
-Firstly the arguments are sent from main.cpp into `CommandLineParser`. It contains map between available commands and respective member functions, that can handle them. There we get only command parameters from args and these parameters then get passed further into `Controller` in appropriate member function, that further handles them. 
+## Code flow
+Firstly the arguments are sent from `main.cpp` into `MasterController`. It contains map between available commands and controllers (instances implementing `IController`), that handle them. Based on the command recieved on the CLI, `MasterController` then calls appropriate controler, who handles the command by updating/retrieving data from the model. After the request is executed, controller returns appropriate instance of `IView`, that can display result of the operation on the model or the retrieved data. This view instance is then propagated up through `MasterController` to the `main.cpp`, where there is called method on the view, that renders the result to the user. 
 
-Lots of member functions in `CommandLineParser` are static yet they take an instance of `CommandLineParser` as their parameter, which can look a bit odd. It is because the map between commands and member functions utilizes `std::function` which works better with static functions, yet I needed to access members of the `CommandLineParser` instance, so in the end I decided to use static member functions with `CommandLineParser` instance as a function parameter to meet these two requirements. 
-
-After arguments are parser into just command parameters, they are passed into appropriate function in `Controller`. Controller holds instances of `View` and `Model`. Firstly it calls `Model` to store/retrieve data and passes command arguments to it and then calls `View` to display results to the user on CLI. 
-
+## Info about classes
 `Model` is the core of the application as it handles logic of data, its storing and retrieving. It utilizes json.hpp https://github.com/nlohmann/json library and structures from `dataNS` namespace, that encapsulates structures `DateStruct`, `Expense`, `Income`, `Category`, `Budget` and `BudgetsHolder` as well as respective functions, to convert these structures to and from json. These functions get called by the json.hpp library and thats the reason, they have to be in a namespace together with the structures, otherwise there is a naming overlap. 
 
 `Budget` structure holds vector of `Incomes` (these are unnamed) and a map between name of category and `Category` object.
@@ -108,6 +115,7 @@ So from the data structures, only `Budget` and `Category` can be accessed by nam
 
 `Model` closely works with `DateManager`. This class handles anything that has to do with dates - parsing dates, getting current dates, more complex comparing. One of the functions also can take start and end of the budget, expense date and its category and compute how fast the user is spending their budget and advide them to slow down, if they spend too quickly. 
 
-`DateManager` works primarily with two types of objects: `DataStruct` from `dataNS` namespace, which is used for storing in json and passing around in the program, and year_month_day class from `date.h` library (https://github.com/HowardHinnant/date), which is used for computations over dates. `DateManager` can also freely tansfer between these types. 
+`DateManager` works primarily with two types of objects: `DataStruct` from `dataNS` namespace, which is used for storing in json and passing around in the program, and year_month_day class from `date.h` library (https://github.com/HowardHinnant/date), which is used for computations over dates. `DateManager` can also freely tansfer between these types.  
 
-`View` then offers various member functions to display results on CLI from `Model` and it can print help text. 
+## Interfaces
+All three, model, views and controllers are wrapped into interfaces (IModel, IView, IController). This allows for better code division into specialised views and controllers and forces these classes to interact with each other through these interfaces (which have very few methods for IView and IController) without worrying, what exact implementation will handle the request. Using interfaces also helped with testing, as I could swap instances for mock instances for checking, that modules interact correctly. 
