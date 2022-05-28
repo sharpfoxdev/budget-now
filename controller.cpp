@@ -1,12 +1,19 @@
 #include "controller.hpp"
 
-
+/**
+ * @brief Based on the command-controller map calls correct controller, passes arguments to it
+ * and after request is finished, returns view that can display result
+ * @param args arguments from command line
+ * @return unique_ptr<IView> view that can display result of request
+ */
 unique_ptr<IView> MasterController::ExecuteRequest(vector<string> & args){
+    //not enough args
     if(args.size() < 1){
         unique_ptr<IView> ptr = make_unique<MessageView>("Too few arguments, use --help to see available commands. ", "");
         cout.flush();
         return ptr;
     }
+    //get controller
     auto it = commandControllerMap.find(args[0]);
     if (it == commandControllerMap.end()) {
         return make_unique<MessageView>("Master controller doesn't know command: " + args[0], "");
@@ -18,6 +25,12 @@ unique_ptr<IView> MasterController::ExecuteRequest(vector<string> & args){
         return controller.get()->HandleRequest(command, args);
     }
 }
+/**
+ * @brief Updates/retrieves data from Model based on command and returns view, that can display result
+ * @param command command
+ * @param params parameters of command
+ * @return unique_ptr<IView> view that can display result
+ */
 unique_ptr<IView> BudgetController::HandleRequest(string command, const vector<string> & params){
     auto it = actionMap.find(command);
     if (it == actionMap.end()) {
@@ -76,6 +89,12 @@ unique_ptr<IView> BudgetController::HandleRequest(string command, const vector<s
     }
 }
 
+/**
+ * @brief Updates/retrieves data from Model based on command and returns view, that can display result
+ * @param command command
+ * @param params parameters of command
+ * @return unique_ptr<IView> view that can display result
+ */
 unique_ptr<IView> CategoryController::HandleRequest(string command, const vector<string> & params){
     auto it = actionMap.find(command);
     if (it == actionMap.end()) {
@@ -115,7 +134,12 @@ unique_ptr<IView> CategoryController::HandleRequest(string command, const vector
         }
     }
 }
-
+/**
+ * @brief Updates/retrieves data from Model based on command and returns view, that can display result
+ * @param command command
+ * @param params parameters of command
+ * @return unique_ptr<IView> view that can display result
+ */
 unique_ptr<IView> IncomeController::HandleRequest(string command, const vector<string> & params){
     auto it = actionMap.find(command);
     if (it == actionMap.end()) {
@@ -140,6 +164,12 @@ unique_ptr<IView> IncomeController::HandleRequest(string command, const vector<s
     }
 }
 
+/**
+ * @brief Updates/retrieves data from Model based on command and returns view, that can display result
+ * @param command command
+ * @param params parameters of command
+ * @return unique_ptr<IView> view that can display result
+ */
 unique_ptr<IView> ExpenseController::HandleRequest(string command, const vector<string> & params){
     auto it = actionMap.find(command);
     if (it == actionMap.end()) {
@@ -163,97 +193,12 @@ unique_ptr<IView> ExpenseController::HandleRequest(string command, const vector<
         }
     }
 }
+/**
+ * @brief Gets called when helptext is needed, returns HelpView that can display it
+ * @param command command
+ * @param params parameters of command
+ * @return unique_ptr<IView> view that can display result
+ */
 unique_ptr<IView> HelpController::HandleRequest(string command, const vector<string> & params){
     return make_unique<HelpView>("howToUse.txt");
 }
-
-// /**
-//  * @brief Calls view to print help text to CLI
-//  */
-// void Controller::PrintHelp(){
-//     view.PrintHelp();
-// }
-
-// /**
-//  * @brief Calls model to set primary budget and then calls view to display results. 
-//  * @param params primary budget parameters
-//  */
-// void Controller::SetPrimaryBudget(const vector<string> & params){
-//     bool success = model.SetPrimaryBudget(params);
-//     view.PrintOperationResult(success);
-// }
-// /**
-//  * @brief Gets BudgetHolder from Model and then calls View to display it
-//  */
-// void Controller::ListAllBudgets(){
-//     dataNS::BudgetsHolder budgets = model.GetBudgetsHolder();
-//     view.PrintBudgetsList(budgets);
-// }
-// /**
-//  * @brief Calls Model to copy old budget information into new one. 
-//  * @param params 
-//  */
-// void Controller::CopyBudget(const vector<string> & params){
-//     bool success = model.CopyBudget(params);
-//     view.PrintOperationResult(success);
-// }
-// /**
-//  * @brief Adds budget into Model and displays result
-//  * @param params Budget parameters
-//  */
-// void Controller::AddBudget(const vector<string> & params){
-//     bool success = model.AddBudget(params);
-//     view.PrintOperationResult(success);
-// }
-// /**
-//  * @brief Adds Expense into Model and displays result through View
-//  * @param params Expense parameters
-//  */
-// void Controller::AddExpense(const vector<string> & params){
-//     bool success = model.AddExpense(params);
-//     view.PrintOperationResult(success);
-// }
-// /**
-//  * @brief Adds category into Model and displays result through View
-//  * @param params Category params
-//  */
-// void Controller::AddCategory(const vector<string> & params){
-//     bool success = model.AddCategory(params);
-//     view.PrintOperationResult(success);
-// }
-// /**
-//  * @brief Adds income into Model and displays result through View
-//  * @param params Income params
-//  */
-// void Controller::AddIncome(const vector<string> & params){
-//     bool success = model.AddIncome(params);
-//     view.PrintOperationResult(success);
-// }
-// /**
-//  * @brief Gets budget from Model and calls View to display it. 
-//  * @param params Budget params
-//  */
-// void Controller::PrintBudgetInfo(const vector<string> & params){
-//     dataNS::Budget budget;
-//     try{
-//         budget = model.GetBudget(params);
-//     }
-//     catch(...){
-//         return;
-//     }
-//     view.PrintBudgetInfo(budget);
-// }
-// /**
-//  * @brief Gets Category from Model and calls View to display it. 
-//  * @param params Category params
-//  */
-// void Controller::PrintCategoryInfo(const vector<string> & params){
-//     dataNS::Category category;
-//     try{
-//         category = model.GetCategory(params);
-//     }
-//     catch(...){
-//         return;
-//     }
-//     view.PrintCategoryInfo(category);
-// }

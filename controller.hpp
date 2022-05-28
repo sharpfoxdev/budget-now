@@ -11,19 +11,28 @@
 
 using namespace std;
 
-
-
+/**
+ * @brief Interface for controller
+ */
 class IController{
 public: 
 	virtual ~IController() = default;
+    /**
+     * @brief Updates/retrieves data from Model based on command and returns view, that can display result
+     * @param command command
+     * @param params parameters of command
+     * @return unique_ptr<IView> view that can display result
+     */
     virtual unique_ptr<IView> HandleRequest(string command, const vector<string> & params) = 0;
 };
 
+/**
+ * @brief Implementation of IController interface, handles budget related commands
+ */
 class BudgetController final : public IController 
 {
 private:
     shared_ptr<IModel> model;
-    //Model & model;
     enum class Action { List, Add, Copy, SetPrimary, Info };
 	map<string, Action> actionMap;
 public:
@@ -39,11 +48,13 @@ public:
     virtual unique_ptr<IView> HandleRequest(string command, const vector<string> & params) override;
 };
 
+/**
+ * @brief Implementation of IController interface, handles expense related commands
+ */
 class ExpenseController final : public IController 
 {
 private:
     shared_ptr<IModel> model;
-    //Model & model;
     enum class Action { Add };
 	map<string, Action> actionMap;
 public:
@@ -55,10 +66,12 @@ public:
     virtual unique_ptr<IView> HandleRequest(string command, const vector<string> & params) override;
 };
 
+/**
+ * @brief Implementation of IController interface, handles category related commands
+ */
 class CategoryController final : public IController 
 {
 private:
-    //Model & model;
     shared_ptr<IModel> model;
     enum class Action { Add, Info };
 	map<string, Action> actionMap;
@@ -72,10 +85,12 @@ public:
     virtual unique_ptr<IView> HandleRequest(string command, const vector<string> & params) override;
 };
 
+/**
+ * @brief Implementation of IController interface, income budget related commands
+ */
 class IncomeController final : public IController 
 {
 private:
-    //Model & model;
     shared_ptr<IModel> model;
     enum class Action { Add };
     map<string, Action> actionMap;
@@ -88,10 +103,12 @@ public:
     virtual unique_ptr<IView> HandleRequest(string command, const vector<string> & params) override;
 };
 
+/**
+ * @brief Implementation of IController interface, handles when it is needed to display help to the user
+ */
 class HelpController final : public IController 
 {
 private:
-    //Model & model;
     shared_ptr<IModel> model;
     enum class Action { Help };
     map<string, Action> actionMap;
@@ -104,6 +121,10 @@ public:
     virtual unique_ptr<IView> HandleRequest(string command, const vector<string> & params) override;
 };
 
+/**
+ * @brief Class, that handles dispatching work to some exact controller based on the command.
+ * Has map between commands and controllers. 
+ */
 class MasterController{
 private:
     map<string, shared_ptr<IController>> & commandControllerMap;
@@ -111,24 +132,5 @@ public:
     MasterController(map<string, shared_ptr<IController>> & commandControllerMap) : commandControllerMap(commandControllerMap){}
     unique_ptr<IView> ExecuteRequest(vector<string> & args);
 };
-/**
- * @brief Calls Model to get/set data and then calls View to show them to the user on CLI
- */
-// class Controller{
-// public: 
-//     void ListAllBudgets();
-//     void CopyBudget(const vector<string> & params);
-//     void AddBudget(const vector<string> & params);
-//     void AddExpense(const vector<string> & params);
-//     void AddCategory(const vector<string> & params);
-//     void AddIncome(const vector<string> & params);
-//     void SetPrimaryBudget(const vector<string> & params);
-//     void PrintBudgetInfo(const vector<string> & params);
-//     void PrintCategoryInfo(const vector<string> & params);
-//     void PrintHelp();
-// private:
-//     View view;
-//     Model model;
-// };
 
 #endif
