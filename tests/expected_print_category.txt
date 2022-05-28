@@ -1,0 +1,6 @@
+Expenses: 
+2.5.2022   200 tesco
+Budgeted: 5000
+Expense: 200
+Left to spend: 4800
+Spent 4 % of budget

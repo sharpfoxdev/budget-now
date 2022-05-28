@@ -1,0 +1,18 @@
+Start: 1.5.2022
+End: 31.5.2022
+Categories: 
+   accomodation
+       Budgeted: 6000
+       Expense: 0
+       Left to spend: 6000
+       Spent 0 % of budget
+   food
+       Budgeted: 5000
+       Expense: 200
+       Left to spend: 4800
+       Spent 4 % of budget
+Total income: 25000
+Total expenditure: 200
+Total budgeted: 11000
+Left to budget: 14000
+Spent 0.8 % of income. 
