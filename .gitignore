@@ -44,3 +44,4 @@ build
 bin
 testmodel
 testview
+docs/doxygen

@@ -7,7 +7,7 @@ CLI budgeting application to track incomes and expenses within categories.
 # Build instructions
 
 In the project folder, there is suplied CMakeLists.txt. To build the project simply run
-```cmake CMakeLists.txt``` and then ```make```, which should build all source code files into executable budgetApp, which you can then run. I recommend using at least C++17 to build successfully. 
+`cmake CMakeLists.txt` and then `make`, which should build all source code files into executable budgetApp, which you can then run. I recommend using at least C++17 to build successfully. 
 
 ## Tests
 To run tests build the project (see above) and then use following commands. 
@@ -16,6 +16,12 @@ cd tests
 ./testmodel 
 ./testcontroller
 ./testview
+```
+
+## Reference documentation
+To generate reference documentation run
+```
+doxygen
 ```
 
 # How to use

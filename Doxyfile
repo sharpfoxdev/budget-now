@@ -1,0 +1,5 @@
+PROJECT_NAME = "Budget now"
+INPUT =  README.md controller.cpp controller.hpp dataClasses.hpp dateManager.cpp dateManager.hpp main.cpp model.cpp model.hpp view.cpp view.hpp
+OUTPUT_DIRECTORY = docs/doxygen
+EXTRACT_STATIC = YES
+USE_MDFILE_AS_MAINPAGE = README.md
