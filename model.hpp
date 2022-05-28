@@ -17,7 +17,23 @@ using namespace std;
 using namespace std::chrono;
 using namespace date;
 
-class Model{
+class IModel{
+public: 
+    virtual ~IModel() = default;
+    virtual dataNS::BudgetsHolder GetBudgetsHolder() = 0;
+    virtual bool CopyBudget(const vector<string> & params) = 0;
+    virtual bool SetPrimaryBudget(const vector<string> & params) = 0;
+    virtual bool AddBudget(const vector<string> & params) = 0;
+    virtual bool AddExpense(const vector<string> & params) = 0;
+    virtual bool AddCategory(const vector<string> & params) = 0;
+    virtual bool AddIncome(const vector<string> & params) = 0;
+    virtual dataNS::Budget GetBudget(const vector<string> & params) = 0;
+    virtual dataNS::Category GetCategory(const vector<string> & params) = 0;
+    virtual string GetMessage() = 0;
+
+};
+
+class Model final : public IModel{
 public:
     Model(string jsonFile) : jsonFile(jsonFile) {}
     dataNS::BudgetsHolder GetBudgetsHolder();

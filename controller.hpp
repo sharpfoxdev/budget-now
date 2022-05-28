@@ -22,11 +22,12 @@ public:
 class BudgetController final : public IController 
 {
 private:
-    Model & model;
+    shared_ptr<IModel> model;
+    //Model & model;
     enum class Action { List, Add, Copy, SetPrimary, Info };
 	map<string, Action> actionMap;
 public:
-    BudgetController(Model & model) : model(model){
+    BudgetController(shared_ptr<IModel> model) : model(model){
         actionMap = {
             { "list", Action::List},
             { "add_budget", Action::Add},
@@ -41,11 +42,12 @@ public:
 class ExpenseController final : public IController 
 {
 private:
-    Model & model;
+    shared_ptr<IModel> model;
+    //Model & model;
     enum class Action { Add };
 	map<string, Action> actionMap;
 public:
-    ExpenseController(Model & model) : model(model){
+    ExpenseController(shared_ptr<IModel> model) : model(model){
         actionMap = {
             { "expense", Action::Add}
         };
@@ -56,11 +58,12 @@ public:
 class CategoryController final : public IController 
 {
 private:
-    Model & model;
+    //Model & model;
+    shared_ptr<IModel> model;
     enum class Action { Add, Info };
 	map<string, Action> actionMap;
 public:
-    CategoryController(Model & model) : model(model){
+    CategoryController(shared_ptr<IModel> model) : model(model){
         actionMap = {
             { "info_category", Action::Info},
             { "add_category", Action::Add}
@@ -72,11 +75,12 @@ public:
 class IncomeController final : public IController 
 {
 private:
-    Model & model;
+    //Model & model;
+    shared_ptr<IModel> model;
     enum class Action { Add };
     map<string, Action> actionMap;
 public:
-    IncomeController(Model & model) : model(model){
+    IncomeController(shared_ptr<IModel> model) : model(model){
         actionMap = {
             { "add_income", Action::Add}
         };
@@ -87,11 +91,12 @@ public:
 class HelpController final : public IController 
 {
 private:
-    Model & model;
+    //Model & model;
+    shared_ptr<IModel> model;
     enum class Action { Help };
     map<string, Action> actionMap;
 public:
-    HelpController(Model & model) : model(model){
+    HelpController(shared_ptr<IModel> model) : model(model){
         actionMap = {
             { "--help", Action::Help}
         };

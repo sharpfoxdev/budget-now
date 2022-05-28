@@ -3,13 +3,7 @@
 
 unique_ptr<IView> MasterController::ExecuteRequest(vector<string> & args){
     if(args.size() < 1){
-        //cout << "Execute req" << endl;
-        //string str("Too few arguments, use --help to see available commands. ");
-        //string second("Second string");
         unique_ptr<IView> ptr = make_unique<MessageView>("Too few arguments, use --help to see available commands. ", "");
-        //unique_ptr<IView> ptr = make_unique<MessageView>(str, second);
-        //ptr.get()->RenderTo(cout);
-        //cout << "Finished exec req" << endl; 
         cout.flush();
         return ptr;
     }
@@ -35,21 +29,21 @@ unique_ptr<IView> BudgetController::HandleRequest(string command, const vector<s
         {
             case Action::Add:
             {
-                bool success = model.AddBudget(params);
-                return make_unique<OperationResultView>(success, model.GetMessage());
+                bool success = model.get()->AddBudget(params);
+                return make_unique<OperationResultView>(success, model.get()->GetMessage());
                 break;
             }
             case Action::Copy:
             {
-                bool success = model.CopyBudget(params);
-                return make_unique<OperationResultView>(success, model.GetMessage());
+                bool success = model.get()->CopyBudget(params);
+                return make_unique<OperationResultView>(success, model.get()->GetMessage());
                 break;
             }
             case Action::Info:
             {
                 dataNS::Budget budget;
                 try{
-                    budget = model.GetBudget(params);
+                    budget = model.get()->GetBudget(params);
                 }
                 catch (const std::exception &exc)
                 {
@@ -58,19 +52,19 @@ unique_ptr<IView> BudgetController::HandleRequest(string command, const vector<s
                 catch(...){
                     return make_unique<MessageView>("Unknown error. ", "");
                 }
-                return make_unique<BudgetInfoView>(budget, model.GetMessage());
+                return make_unique<BudgetInfoView>(budget, model.get()->GetMessage());
                 break;
             }
             case Action::List:
             {
-                dataNS::BudgetsHolder budgets = model.GetBudgetsHolder();
-                return make_unique<BudgetsListView>(budgets, model.GetMessage());
+                dataNS::BudgetsHolder budgets = model.get()->GetBudgetsHolder();
+                return make_unique<BudgetsListView>(budgets, model.get()->GetMessage());
                 break;
             }
             case Action::SetPrimary:
             {
-                bool success = model.SetPrimaryBudget(params);
-                return make_unique<OperationResultView>(success, model.GetMessage());
+                bool success = model.get()->SetPrimaryBudget(params);
+                return make_unique<OperationResultView>(success, model.get()->GetMessage());
                 break;
             }
             default:
@@ -93,15 +87,15 @@ unique_ptr<IView> CategoryController::HandleRequest(string command, const vector
         {
             case Action::Add:
             {
-                bool success = model.AddCategory(params);
-                return make_unique<OperationResultView>(success, model.GetMessage());
+                bool success = model.get()->AddCategory(params);
+                return make_unique<OperationResultView>(success, model.get()->GetMessage());
                 break;
             }
             case Action::Info:
             {
                 dataNS::Category category;
                 try{
-                    category = model.GetCategory(params);
+                    category = model.get()->GetCategory(params);
                 }
                 catch (const std::exception &exc)
                 {
@@ -110,7 +104,7 @@ unique_ptr<IView> CategoryController::HandleRequest(string command, const vector
                 catch(...){
                     return make_unique<MessageView>("Unknown error. ", "");
                 }
-                return make_unique<CategoryInfoView>(category, model.GetMessage());
+                return make_unique<CategoryInfoView>(category, model.get()->GetMessage());
                 break;
             }
             default:
@@ -133,8 +127,8 @@ unique_ptr<IView> IncomeController::HandleRequest(string command, const vector<s
         {
             case Action::Add:
             {
-                bool success = model.AddIncome(params);
-                return make_unique<OperationResultView>(success, model.GetMessage());
+                bool success = model.get()->AddIncome(params);
+                return make_unique<OperationResultView>(success, model.get()->GetMessage());
                 break;
             }
             default:
@@ -157,8 +151,8 @@ unique_ptr<IView> ExpenseController::HandleRequest(string command, const vector<
         {
             case Action::Add:
             {
-                bool success = model.AddExpense(params);
-                return make_unique<OperationResultView>(success, model.GetMessage());
+                bool success = model.get()->AddExpense(params);
+                return make_unique<OperationResultView>(success, model.get()->GetMessage());
                 break;
             }
             default:
