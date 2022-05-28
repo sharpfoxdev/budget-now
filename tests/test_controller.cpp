@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+#include "gmock/gmock.h"
+#include "controller.hpp"
 #include "model.hpp"
 #include "dataClasses.hpp"
 #include "view.hpp"
@@ -12,102 +14,95 @@
 #include <sstream>
 
 using namespace std;
+using ::testing::AtLeast; 
 
-void compareFileAndString(const string & file, const string & stringIn){
-    stringstream stream1;
-    ifstream f1(file);
-    if(f1.is_open()){
-        stream1 << f1.rdbuf();
-    }
 
-    string str1 = stream1.str();
-    ASSERT_EQ(str1, stringIn);
-    f1.close();
-}
-
-class ViewTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        //we make copies that we edit with Model
-        std::filesystem::copy_file(sourceTestJson, testJson);
-    }
-    string testJson = "test.json";
-    void TearDown() override{
-        remove("test.json");
-    }
-private:
-    const string sourceTestJson = "source_test.json";
+class MockSubController : public IController {
+    public:
+    MOCK_METHOD(unique_ptr<IView>, HandleRequest, (string command, const vector<string> & params), (override));
 };
 
-TEST_F(ViewTest, HelpViewWorks) {
-    stringstream stream1;
-    ifstream f1("source_helptext.txt");
-    if(f1.is_open()){
-        stream1 << f1.rdbuf();
-    }
-    string str1 = stream1.str();
-    string str2 = "help text";
-    ASSERT_EQ(str1, str2);
-    f1.close();
-    /*ifstream f(ModelTest::emptyJson);
-    stringstream ss;
-    if (f.is_open()){
-        ss << f.rdbuf();
-    }
-    string s = ss.str();
-    EXPECT_EQ(s, "hello");
-    f.close();
-    ofstream fi(ModelTest::emptyJson);
-    fi << "jop";
-    fi.close();*/  
+class MockModel : public IModel{
+    public:
+    MOCK_METHOD(dataNS::BudgetsHolder, GetBudgetsHolder, (), (override));
+    MOCK_METHOD(bool, CopyBudget, (const vector<string> & params), (override));
+    MOCK_METHOD(bool, SetPrimaryBudget, (const vector<string> & params), (override));
+    MOCK_METHOD(bool, AddBudget, (const vector<string> & params), (override));
+    MOCK_METHOD(bool, AddExpense, (const vector<string> & params), (override));
+    MOCK_METHOD(bool, AddCategory, (const vector<string> & params), (override));
+    MOCK_METHOD(bool, AddIncome, (const vector<string> & params), (override));
+    MOCK_METHOD(dataNS::Budget, GetBudget, (const vector<string> & params), (override));
+    MOCK_METHOD(dataNS::Category, GetCategory, (const vector<string> & params), (override));
+    MOCK_METHOD(string, GetMessage, (), (override));
+};
+
+TEST(CallingSubController, MasterControllerWorks) {
+    shared_ptr<MockSubController> mockSubController = make_shared<MockSubController>();
+    map<string, shared_ptr<IController>> commandControllerMap = {
+        { "test_command", mockSubController},
+    };
+    vector<string> args{"test_command", "param1", "param2"};
+
+    vector<string> expectedParams{"param1", "param2"};
+    EXPECT_CALL(*mockSubController, HandleRequest("test_command", expectedParams));
+
+    MasterController masterContr(commandControllerMap);
+    //this should call HandleRequest on mockSubController
+    masterContr.ExecuteRequest(args); 
+}
+TEST(CallingModel, BudgetControllerWorks) {
+    shared_ptr<MockModel> mockModel1 = make_shared<MockModel>();
+    shared_ptr<MockModel> mockModel2 = make_shared<MockModel>();
+    shared_ptr<MockModel> mockModel3 = make_shared<MockModel>();
+
+    shared_ptr<IController> controller = it->second;
+    string command = args[0];
+    args.erase(args.begin());
+    return controller.get()->HandleRequest(command, args);
 }
 
-TEST_F(ViewTest, BudgetsListViewWorks) {
-    unique_ptr<IModel> model = make_unique<Model>(ViewTest::testJson);
-    dataNS::BudgetsHolder budgets = model.get()->GetBudgetsHolder();
-    unique_ptr<IView> view = make_unique<BudgetsListView>(budgets, model.get()->GetMessage());
-    stringstream ss;
-    view.get()->RenderTo(ss);
-    string str = ss.str();
-    compareFileAndString("expected_print_list.txt", str);
-}
-TEST_F(ViewTest, OperationResultViewWorks) {
-    unique_ptr<IView> viewTrue = make_unique<OperationResultView>(true, "");
-    stringstream ssTrue;
-    viewTrue.get()->RenderTo(ssTrue);
-    string strTrue = ssTrue.str();
-    ASSERT_EQ(strTrue, "Operation Successful. \n");
+TEST(CallingModel, ExpenseControllerWorks) {
+    shared_ptr<MockSubController> mockSubController = make_shared<MockSubController>();
+    map<string, shared_ptr<IController>> commandControllerMap = {
+        { "test_command", mockSubController},
+    };
+    vector<string> args{"test_command", "param1", "param2"};
 
-    unique_ptr<IView> viewFalse = make_unique<OperationResultView>(false, "");
-    stringstream ssFalse;
-    viewFalse.get()->RenderTo(ssFalse);
-    string strFalse = ssFalse.str();
-    ASSERT_EQ(strFalse, "Operation unsuccessful, please repeat the operation. \n");
+    vector<string> expectedParams{"param1", "param2"};
+    EXPECT_CALL(*mockSubController, HandleRequest("test_command", expectedParams));
+
+    MasterController masterContr(commandControllerMap);
+    //this should call HandleRequest on mockSubController
+    masterContr.ExecuteRequest(args); 
 }
-TEST_F(ViewTest, BudgetInfoViewWorks) {
-    unique_ptr<IModel> model = make_unique<Model>(ViewTest::testJson);
-    dataNS::Budget budget = model.get()->GetBudget(vector<string>{"may22"});
-    unique_ptr<IView> view = make_unique<BudgetInfoView>(budget, model.get()->GetMessage());
-    stringstream ss;
-    view.get()->RenderTo(ss);
-    string str = ss.str();
-    compareFileAndString("expected_print_budget.txt", str);
+TEST(CallingModel, CategoryControllerWorks) {
+    shared_ptr<MockSubController> mockSubController = make_shared<MockSubController>();
+    map<string, shared_ptr<IController>> commandControllerMap = {
+        { "test_command", mockSubController},
+    };
+    vector<string> args{"test_command", "param1", "param2"};
+
+    vector<string> expectedParams{"param1", "param2"};
+    EXPECT_CALL(*mockSubController, HandleRequest("test_command", expectedParams));
+
+    MasterController masterContr(commandControllerMap);
+    //this should call HandleRequest on mockSubController
+    masterContr.ExecuteRequest(args); 
 }
-TEST_F(ViewTest, CategoryInfoViewWorks) {
-    unique_ptr<IModel> model = make_unique<Model>(ViewTest::testJson);
-    dataNS::Category category = model.get()->GetCategory(vector<string>{"food"});
-    unique_ptr<IView> view = make_unique<CategoryInfoView>(category, model.get()->GetMessage());
-    stringstream ss;
-    view.get()->RenderTo(ss);
-    string str = ss.str();
-    compareFileAndString("expected_print_category.txt", str);
-}
-TEST_F(ViewTest, MessageViewWorks) {
-    unique_ptr<IView> viewTrue = make_unique<MessageView>("message", "");
-    stringstream ssTrue;
-    viewTrue.get()->RenderTo(ssTrue);
-    string strTrue = ssTrue.str();
-    ASSERT_EQ(strTrue, "message\n");
+
+TEST(CallingModel, IncomeControllerWorks) {
+    shared_ptr<MockSubController> mockSubController = make_shared<MockSubController>();
+    map<string, shared_ptr<IController>> commandControllerMap = {
+        { "test_command", mockSubController},
+    };
+    vector<string> args{"test_command", "param1", "param2"};
+
+    vector<string> expectedParams{"param1", "param2"};
+    EXPECT_CALL(*mockSubController, HandleRequest("test_command", expectedParams));
+
+    MasterController masterContr(commandControllerMap);
+    //this should call HandleRequest on mockSubController
+    masterContr.ExecuteRequest(args); 
 }
 
 
