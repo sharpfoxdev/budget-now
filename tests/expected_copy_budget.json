@@ -1,0 +1,107 @@
+{
+    "otherBudgets": {
+        "april22": {
+            "categories": {},
+            "end": {
+                "day": 30,
+                "month": 4,
+                "year": 2022
+            },
+            "incomes": [],
+            "start": {
+                "day": 1,
+                "month": 4,
+                "year": 2022
+            }
+        },
+        "july22": {
+            "categories": {
+                "accomodation": {
+                    "budgeted": 6000.0,
+                    "expenses": []
+                },
+                "food": {
+                    "budgeted": 5000.0,
+                    "expenses": []
+                }
+            },
+            "end": {
+                "day": 30,
+                "month": 6,
+                "year": 2022
+            },
+            "incomes": [],
+            "start": {
+                "day": 1,
+                "month": 6,
+                "year": 2022
+            }
+        },
+        "june22": {
+            "categories": {
+                "accomodation": {
+                    "budgeted": 6000.0,
+                    "expenses": []
+                },
+                "food": {
+                    "budgeted": 5000.0,
+                    "expenses": []
+                }
+            },
+            "end": {
+                "day": 30,
+                "month": 6,
+                "year": 2022
+            },
+            "incomes": [],
+            "start": {
+                "day": 1,
+                "month": 6,
+                "year": 2022
+            }
+        }
+    },
+    "primaryBudget": {
+        "categories": {
+            "accomodation": {
+                "budgeted": 6000.0,
+                "expenses": []
+            },
+            "food": {
+                "budgeted": 5000.0,
+                "expenses": [
+                    {
+                        "amount": 200.0,
+                        "comment": "tesco",
+                        "date": {
+                            "day": 2,
+                            "month": 5,
+                            "year": 2022
+                        }
+                    }
+                ]
+            }
+        },
+        "end": {
+            "day": 31,
+            "month": 5,
+            "year": 2022
+        },
+        "incomes": [
+            {
+                "amount": 20000.0,
+                "comment": "paycheck"
+            },
+            {
+                "amount": 5000.0,
+                "comment": "gift"
+            }
+        ],
+        "start": {
+            "day": 1,
+            "month": 5,
+            "year": 2022
+        }
+    },
+    "primaryBudgetName": "may22"
+}
