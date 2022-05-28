@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "model.hpp"
-#include "view.hpp"
 #include "dataClasses.hpp"
+#include "view.hpp"
 #include <string>
 #include <fstream>
 #include <sstream>
