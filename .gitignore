@@ -42,3 +42,5 @@ _deps
 lib
 build
 bin
+testmodel
+testview
