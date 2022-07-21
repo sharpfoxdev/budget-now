@@ -36,3 +36,12 @@ budgetApp
 CMakeCache.txt
 Makefile
 CMakeFiles
+build
+.vscode
+_deps
+lib
+build
+bin
+testmodel
+testview
+docs/doxygen

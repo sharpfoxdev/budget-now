@@ -10,7 +10,7 @@
  * @param expenseDate date of the expense
  * @param category category of expense
  */
-void DateManager::SignalSpendingSpeed(const dataNS::DateStruct & startDate, const dataNS::DateStruct & endDate, const dataNS::DateStruct & expenseDate, const dataNS::Category & category){
+string DateManager::GetSpendingSpeedString(const dataNS::DateStruct & startDate, const dataNS::DateStruct & endDate, const dataNS::DateStruct & expenseDate, const dataNS::Category & category){
     auto ymdStart = year{startDate.year}/startDate.month/startDate.day;
     auto ymdEnd = year{endDate.year}/endDate.month/endDate.day;
     auto ymdExpense = year{expenseDate.year}/expenseDate.month/expenseDate.day;
@@ -27,21 +27,22 @@ void DateManager::SignalSpendingSpeed(const dataNS::DateStruct & startDate, cons
     for(const auto & expense : category.expenses){
         expenseInCategory += expense.amount;
     }
+    stringstream sstream;
     //we are managing to save (we spent 20% less then we should by this time)
     if(expenseInCategory < lowerBound){
-        cout << "Good job! You are spending your money wisely and you manage to save. " << endl;
+        sstream << "Good job! You are spending your money wisely and you manage to save. " << endl;
     }
     else if(expenseInCategory > upperBound){
-        cout << "WOAH, SLOW DOWN WILL YA. Or else you better find better job if you keep throwing money out of window like this. " << endl;
+        sstream << "WOAH, SLOW DOWN WILL YA. Or else you better find better job if you keep throwing money out of window like this. " << endl;
     }
     else{
-        cout << "Your spending habits are within acceptable range, keep it up!" << endl;
+        sstream << "Your spending habits are within acceptable range, keep it up!" << endl;
     }
     if(expenseInCategory > category.budgeted){
-        cout << "You spent more than you budgeted, I am disappointed :[" << endl;
+        sstream << "You spent more than you budgeted, I am disappointed :[" << endl;
     }
-    cout << "You spent " << (100*expenseInCategory)/category.budgeted << " \% of budget in this category" << endl;
-
+    sstream << "You spent " << (100*expenseInCategory)/category.budgeted << " \% of budget in this category" << endl;
+    return sstream.str();
 }
 /**
  * @brief Function to check, whether s date is in between two other dates

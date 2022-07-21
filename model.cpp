@@ -61,32 +61,36 @@ namespace dataNS{
     }
 
 }
+
+string Model::GetMessage(){
+    return message.str();
+}
 /**
  * @brief Signals to the user incorrect number of command
  * parameters were used. 
  */
-void Model::SignalIncorrectNumberOfParams(){
-    cout << "Incorrect number of parameters. " << endl;
+void Model::MessageIncorrectNumberOfParams(){
+    message << "Incorrect number of parameters. " << endl;
 }
 /**
  * @brief Signals to the user incorrect type of parameter
  * was used
  */
-void Model::SignalIncorrectParamType(){
-    cout << "Incorrect parameter type. " << endl;
+void Model::MessageIncorrectParamType(){
+    message << "Incorrect parameter type. " << endl;
 }
 /**
  * @brief Signals to the user, that he is trying to make a
  * duplicate name (of budget, category).
  */
-void Model::SignalUsedName(){
-    cout << "You are trying to use name that is used elsewhere. " << endl;
+void Model::MessageUsedName(){
+    message << "You are trying to use name that is used elsewhere. " << endl;
 }
 /**
  * @brief Signals to the user, that no primary budget is set. 
  */
-void Model::SignalNoPrimaryBudget(){
-    cout << "There is no primary budget set. " << endl;
+void Model::MessageNoPrimaryBudget(){
+    message << "There is no primary budget set. " << endl;
 }
 /**
  * @brief Gets budgets holder from .json file
@@ -124,7 +128,7 @@ void Model::SaveBudgetsHolder(dataNS::BudgetsHolder bh){
 bool Model::CopyBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() < 4){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         return false;
     }
     string oldName = params[0];
@@ -139,11 +143,11 @@ bool Model::CopyBudget(const vector<string> & params){
         endDateParsed = DateManager::ParseDate(endDateString);
     }
     catch(...){
-        SignalIncorrectParamType();
+        MessageIncorrectParamType();
         return false;
     }
     if(!(startDateParsed <= endDateParsed)){
-        cout << "first date should be smaller than second. " << endl;
+        message << "first date should be smaller than second. " << endl;
         return false;
     }
     //Get old budget
@@ -152,7 +156,7 @@ bool Model::CopyBudget(const vector<string> & params){
         oldBudget = GetBudget(vector<string>{oldName});
     }
     catch(...){
-        cout << "Couldn't locate old budget: " << oldName << endl;
+        message << "Couldn't locate old budget: " << oldName << endl;
         return false;
     }
     dataNS::Budget newBudget;
@@ -162,7 +166,7 @@ bool Model::CopyBudget(const vector<string> & params){
     auto it = bh.otherBudgets.find(newName);
     if (it != bh.otherBudgets.end() || bh.primaryBudgetName == newName) {
         //found duplicate
-        SignalUsedName();
+        MessageUsedName();
         return false;
     }
     //iterate over old budget categories and copy them into new one
@@ -184,7 +188,7 @@ bool Model::CopyBudget(const vector<string> & params){
 bool Model::SetPrimaryBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() != 1){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         return false;
     }
     string name = params[0];
@@ -195,7 +199,7 @@ bool Model::SetPrimaryBudget(const vector<string> & params){
     //searching for given budget
     auto it = bh.otherBudgets.find(name);
     if (it == bh.otherBudgets.end()) {
-        cout << "Couldn't locate budget: " << name << endl;
+        message << "Couldn't locate budget: " << name << endl;
         return false;
     }
     //making copies, because inserting into map can make it broken possibly, since we are working with iterators
@@ -220,7 +224,7 @@ bool Model::SetPrimaryBudget(const vector<string> & params){
 bool Model::AddBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() < 3){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         return false;
     }
     string name = params[0];
@@ -234,11 +238,11 @@ bool Model::AddBudget(const vector<string> & params){
         endDateParsed = DateManager::ParseDate(endDateString);
     }
     catch(...){
-        SignalIncorrectParamType();
+        MessageIncorrectParamType();
         return false;
     }
     if(!(startDateParsed <= endDateParsed)){
-        cout << "first date should be smaller than second. " << endl;
+        message << "first date should be smaller than second. " << endl;
         return false;
     }
 
@@ -246,7 +250,7 @@ bool Model::AddBudget(const vector<string> & params){
     auto it = bh.otherBudgets.find(name);
     if (it != bh.otherBudgets.end() || bh.primaryBudgetName == name) {
         //found duplicate
-        SignalUsedName();
+        MessageUsedName();
         return false;
     }
     dataNS::Budget budget;
@@ -274,11 +278,11 @@ bool Model::AddExpense(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
     if(bh.primaryBudgetName == ""){
-        SignalNoPrimaryBudget();
+        MessageNoPrimaryBudget();
         return false;
     }
     if(params.size() < 3){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         return false;
     }
     dataNS::Expense expense;
@@ -290,7 +294,7 @@ bool Model::AddExpense(const vector<string> & params){
     //searching for given category in primary budget
     auto it = bh.primaryBudget.categories.find(categoryName);
     if (it == bh.primaryBudget.categories.end()) {
-        cout << "Couldn't find category: " << categoryName << endl;
+        message << "Couldn't find category: " << categoryName << endl;
         return false;
     }
     try{
@@ -298,7 +302,7 @@ bool Model::AddExpense(const vector<string> & params){
         expense.amount = std::stod(amount);
     }
     catch(...){
-        SignalIncorrectParamType();
+        MessageIncorrectParamType();
         return false;
     }
     //parsing date
@@ -308,7 +312,7 @@ bool Model::AddExpense(const vector<string> & params){
             expense.date = dateParsed;
         }
         catch(...){
-            SignalIncorrectParamType();
+            MessageIncorrectParamType();
             return false;
         }
     }
@@ -317,11 +321,11 @@ bool Model::AddExpense(const vector<string> & params){
     }
     bool correctDate = DateManager::DateInBetweenOtherDates(bh.primaryBudget.start, expense.date, bh.primaryBudget.end);
     if(!correctDate){
-        cout << "Expense date not in the budget date range. " << endl;
+        message << "Expense date not in the budget date range. " << endl;
         return false;
     }
     it->second.expenses.push_back(expense);
-    DateManager::SignalSpendingSpeed(bh.primaryBudget.start, bh.primaryBudget.end, expense.date, it->second);
+    message << DateManager::GetSpendingSpeedString(bh.primaryBudget.start, bh.primaryBudget.end, expense.date, it->second);
     SaveBudgetsHolder(bh);
     return true;
 }
@@ -336,11 +340,11 @@ bool Model::AddCategory(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
     if(bh.primaryBudgetName == ""){
-        SignalNoPrimaryBudget();
+        MessageNoPrimaryBudget();
         return false;
     }
     if(params.size() < 2){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         return false;
     }
     //params parsing
@@ -353,14 +357,14 @@ bool Model::AddCategory(const vector<string> & params){
         category.budgeted = budgeted;
     }
     catch(...){
-        SignalIncorrectParamType();
+        MessageIncorrectParamType();
         return false;
     }
     //check for duplicate
     auto it = bh.primaryBudget.categories.find(name);
     if (it != bh.primaryBudget.categories.end()) {
         //we found duplicate
-        SignalUsedName();
+        MessageUsedName();
         return false;
     }
     bh.primaryBudget.categories.insert(make_pair(name, category));
@@ -377,11 +381,11 @@ bool Model::AddIncome(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check that we have primary budget
     if(bh.primaryBudgetName == ""){
-        SignalNoPrimaryBudget();
+        MessageNoPrimaryBudget();
         return false;
     }
     if(params.size() < 1){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         return false;
     }
     dataNS::Income income;
@@ -389,7 +393,7 @@ bool Model::AddIncome(const vector<string> & params){
         income.amount = std::stod(params[0]);
     }
     catch(...){
-        SignalIncorrectParamType();
+        MessageIncorrectParamType();
         return false;
     }
     //we have comment as well with the expense
@@ -411,7 +415,7 @@ dataNS::Budget Model::GetBudget(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     //check for primary budget
     if(bh.primaryBudgetName == ""){
-        SignalNoPrimaryBudget();
+        MessageNoPrimaryBudget();
         throw std::invalid_argument("No primary budget set. ");
     }
     if(params.size() == 0){
@@ -419,7 +423,7 @@ dataNS::Budget Model::GetBudget(const vector<string> & params){
         return bh.primaryBudget;
     }
     if(params.size() != 1){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         throw std::length_error("Incorrect number of params. ");
     }
     string name = params[0];
@@ -430,7 +434,7 @@ dataNS::Budget Model::GetBudget(const vector<string> & params){
     //searching for given budget
     auto it = bh.otherBudgets.find(name);
     if (it == bh.otherBudgets.end()) {
-        cout << "Couldnt locate given budget. " << endl;
+        //cout << "Couldnt locate given budget. " << endl;
         throw std::invalid_argument("Couldnt locate given budget. ");
     }
     return it->second;
@@ -445,18 +449,18 @@ dataNS::Budget Model::GetBudget(const vector<string> & params){
 dataNS::Category Model::GetCategory(const vector<string> & params){
     dataNS::BudgetsHolder bh = GetBudgetsHolder();
     if(params.size() != 1){
-        SignalIncorrectNumberOfParams();
+        MessageIncorrectNumberOfParams();
         throw std::length_error("Incorrect number of params. ");
     }
     if(bh.primaryBudgetName == ""){
-        SignalNoPrimaryBudget();
+        MessageNoPrimaryBudget();
         throw std::invalid_argument("No primary budget set. ");
     }
     string name = params[0];
     //searching for given budget
     auto it = bh.primaryBudget.categories.find(name);
     if (it == bh.primaryBudget.categories.end()) {
-        cout << "Couldnt locate given category. " << endl;
+        //cout << "Couldnt locate given category. " << endl;
         throw std::invalid_argument("Couldnt locate given category. ");
     }
     return it->second;

@@ -1,38 +1,44 @@
 #include "view.hpp"
 
-/**
- * @brief Prints help text to std::out
- */
-void View::PrintHelp(){
-    std::ifstream f("howToUse.txt");
-
-    if (f.is_open()){
-        std::cout << f.rdbuf();
+void HelpView::RenderTo(ostream & stream){
+    ifstream f(pathHelpFile);
+    if(f.is_open()){
+        stream << f.rdbuf();
     }
+    stream.flush();
+    f.close();
 }
-/**
- * @brief Prints to std:out, whether the operation was successful or not
- * @param success true if operation was successful, false if not
- */
-void View::PrintOperationResult( bool success){
+
+void MessageView::RenderTo(ostream & stream){
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
+    stream << message << endl;
+    cout.flush();
+}
+
+void OperationResultView::RenderTo(ostream & stream){
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
     if(success){
-        cout << "Operation Successful. " << endl;
+        stream << "Operation Successful. " << endl;
     }
     else{
-        cout << "Operation unsuccessful, please repeat the operation. " << endl;
+        stream << "Operation unsuccessful, please repeat the operation. " << endl;
     }
 }
-/**
- * @brief Displays detailed information about budget and its categories
- * @param budget Budget to display
- */
-void View::PrintBudgetInfo(dataNS::Budget budget){
-    cout << "Start: " << budget.start.ToString() << endl;
-    cout << "End: " << budget.end.ToString() << endl;
+
+void BudgetInfoView::RenderTo(ostream & stream){
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
+    stream << "Start: " << budget.start.ToString() << endl;
+    stream << "End: " << budget.end.ToString() << endl;
     double totalIncome = 0;
     double totalExpenditure = 0;
     double totalBudgeted = 0;
-    cout << "Categories: " << endl;
+    stream << "Categories: " << endl;
     //category handling
     for(const auto &myPair : budget.categories){
         totalBudgeted += myPair.second.budgeted;
@@ -42,56 +48,55 @@ void View::PrintBudgetInfo(dataNS::Budget budget){
         }
         totalExpenditure += expenseInCategory;
         //printing categori information
-        cout << "   " << myPair.first << endl;
-        cout << "       Budgeted: " << myPair.second.budgeted << endl; 
-        cout << "       Expense: " << expenseInCategory << endl;
-        cout << "       Left to spend: " << myPair.second.budgeted - expenseInCategory << endl;
-        cout << "       Spent " << (100*expenseInCategory)/myPair.second.budgeted << " \% of budget" << endl;
-
-
+        stream << "   " << myPair.first << endl;
+        stream << "       Budgeted: " << myPair.second.budgeted << endl; 
+        stream << "       Expense: " << expenseInCategory << endl;
+        stream << "       Left to spend: " << myPair.second.budgeted - expenseInCategory << endl;
+        stream << "       Spent " << (100*expenseInCategory)/myPair.second.budgeted << " \% of budget" << endl;
     }
     for(const auto &income : budget.incomes) // access by reference to avoid copying
     {
         totalIncome += income.amount;
     }
     //printing budget information
-    cout << "Total income: " << totalIncome << endl;
-    cout << "Total expenditure: " << totalExpenditure << endl;
-    cout << "Total budgeted: " << totalBudgeted << endl;
-    cout << "Left to budget: " << totalIncome - totalBudgeted << endl;
+    stream << "Total income: " << totalIncome << endl;
+    stream << "Total expenditure: " << totalExpenditure << endl;
+    stream << "Total budgeted: " << totalBudgeted << endl;
+    stream << "Left to budget: " << totalIncome - totalBudgeted << endl;
     if(totalIncome > 0){
-        cout << "Spent " << (100*totalExpenditure)/totalIncome << " \% of income. " << endl;
+        stream << "Spent " << (100*totalExpenditure)/totalIncome << " \% of income. " << endl;
     }
 }
-/**
- * @brief Prints detailed information about category end expenses within
- * @param category category to display
- */
-void View::PrintCategoryInfo(dataNS::Category category){
+
+void CategoryInfoView::RenderTo(ostream & stream){
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
+    stream << modelMessage;
     double expenseInCategory = 0;
-    cout << "Expenses: " << endl;
+    stream << "Expenses: " << endl;
     for(const auto & expense : category.expenses){
-        cout << expense.date.ToString();
-        cout << "   " << expense.amount << " " << expense.comment << endl;
+        stream << expense.date.ToString();
+        stream << "   " << expense.amount << " " << expense.comment << endl;
         expenseInCategory += expense.amount;
     }
-    cout << "Budgeted: " << category.budgeted << endl; 
-    cout << "Expense: " << expenseInCategory << endl;
-    cout << "Left to spend: " << category.budgeted - expenseInCategory << endl;
-    cout << "Spent " << (100*expenseInCategory)/category.budgeted << " \% of budget" << endl;
+    stream << "Budgeted: " << category.budgeted << endl; 
+    stream << "Expense: " << expenseInCategory << endl;
+    stream << "Left to spend: " << category.budgeted - expenseInCategory << endl;
+    stream << "Spent " << (100*expenseInCategory)/category.budgeted << " \% of budget" << endl;
 }
-/**
- * @brief Prints list of all budgets with marker, which budget it the primary one
- * @param budgets Budgets holder
- */
-void View::PrintBudgetsList(dataNS::BudgetsHolder budgets){
+
+void BudgetsListView::RenderTo(ostream & stream){
+    if(modelMessage != ""){
+        stream << modelMessage << endl;
+    }
     if(budgets.primaryBudgetName == "" && budgets.otherBudgets.size() == 0){
-        cout << "No budgets were added yet. Use add_budget <budget_name>. " << endl;
+        stream << "No budgets were added yet. Use add_budget <budget_name>. " << endl;
     }
     else{
-        cout << budgets.primaryBudgetName << " - primary budget" << endl;
+        stream << budgets.primaryBudgetName << " - primary budget" << endl;
         for ( const auto &myPair : budgets.otherBudgets ) {
-            std::cout << myPair.first << endl;
+            stream << myPair.first << endl;
         }
     }
 }
