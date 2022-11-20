@@ -44,4 +44,6 @@ build
 bin
 testmodel
 testview
+testcontroller
 docs/doxygen
+Temporary
