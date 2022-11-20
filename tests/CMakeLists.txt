@@ -11,3 +11,9 @@ include_directories(../src)
 target_link_libraries(testmodel gtest_main)
 target_link_libraries(testview gtest_main)
 target_link_libraries(testcontroller gtest_main gmock_main)
+
+# Used for running ctest
+include(GoogleTest)
+gtest_discover_tests(testmodel ./test)
+gtest_discover_tests(testview ./test)
+gtest_discover_tests(testcontroller ./test)
