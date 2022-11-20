@@ -3,7 +3,11 @@ project(BudgetNow)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
-add_executable(budgetApp src/main.cpp src/controller.cpp src/model.cpp src/view.cpp src/controller.hpp src/model.hpp src/view.hpp src/dataClasses.hpp src/json.hpp src/date.h src/dateManager.hpp src/dateManager.cpp)
+
+file(GLOB sourceFiles
+     "src/*"
+)
+add_executable(budgetApp ${sourceFiles})
 
 include_directories(src)
 
