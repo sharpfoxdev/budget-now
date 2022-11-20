@@ -3,7 +3,9 @@ project(BudgetNow)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
-add_executable(budgetApp main.cpp controller.cpp model.cpp view.cpp controller.hpp model.hpp view.hpp dataClasses.hpp json.hpp date.h dateManager.hpp dateManager.cpp)
+add_executable(budgetApp src/main.cpp src/controller.cpp src/model.cpp src/view.cpp src/controller.hpp src/model.hpp src/view.hpp src/dataClasses.hpp src/json.hpp src/date.h src/dateManager.hpp src/dateManager.cpp)
+
+include_directories(src)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -18,5 +20,3 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 add_subdirectory(tests)
-
-# Now simply link against gtest or gtest_main as needed. Eg
